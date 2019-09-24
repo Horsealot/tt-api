@@ -2,7 +2,7 @@ const admin = require('firebase-admin');
 const {AuthError} = require('./../errors');
 const Logger = require('./../utils/logger');
 
-let serviceAccount = require('./../../private_config/triktrak-150e7-firebase-adminsdk-6lbpy-78d2eae7fa');
+let serviceAccount = require('./../../private_config/triktrak-150e7-firebase-adminsdk-6lbpy-633239f6a5');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://triktrak-150e7.firebaseio.com"
