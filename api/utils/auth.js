@@ -4,9 +4,9 @@ require('./../models');
 const UsersModel = mongoose.model('User');
 
 const getTokenFromHeaders = (req) => {
-    const { headers: { authorization } } = req;
+    const {headers: {authorization}} = req;
 
-    if(authorization && authorization.split(' ')[0] === 'Bearer') {
+    if (authorization && authorization.split(' ')[0] === 'Bearer') {
         return authorization.split(' ')[1];
     }
     return null;
@@ -26,14 +26,15 @@ const auth = {
         credentialsRequired: false,
     }),
     loadUser: (req, res, next) => {
-        const { payload: { id } } = req;
+        const {payload: {id}} = req;
         UsersModel.findOne({where: {_id: id}}).then((user) => {
-            if(!user) {
+            if (!user) {
                 return res.sendStatus(400);
             }
             req.user = user;
             next();
         }).catch((err) => {
+            console.log(err);
             return res.sendStatus(400);
         });
     },

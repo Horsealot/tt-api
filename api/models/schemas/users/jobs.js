@@ -1,4 +1,4 @@
-const { Schema } = require('mongoose');
+const {Schema} = require('mongoose');
 
 module.exports = new Schema({
     title: {
@@ -16,4 +16,4 @@ module.exports = new Schema({
     end_date: {
         type: Date,
     }
-},{ _id : false });
+}, {_id: false});

@@ -1,4 +1,4 @@
-const { Schema } = require('mongoose');
+const {Schema} = require('mongoose');
 
 module.exports = new Schema({
     type: {

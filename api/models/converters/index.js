@@ -16,7 +16,7 @@ const smokingHabits = require('./smokingHabits');
  * @returns {*}
  */
 const extractValue = (data, key) => {
-    if(key in data) {
+    if (key in data) {
         return data[key];
     }
     return null;

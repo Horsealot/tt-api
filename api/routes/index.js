@@ -1,5 +1,7 @@
-const users = require('./profile');
+const profile = require('./profile');
+const auth = require('./auth');
 
 module.exports = (router) => {
-    users(router);
+    profile(router);
+    auth(router);
 };
