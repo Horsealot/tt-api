@@ -54,4 +54,53 @@ describe('Profile Route', () => {
         });
     });
 
+    /*
+    * Test the /POST profile filters route
+    */
+    describe('POST /profile/filters', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .post('/api/profile/filters')
+                .send({})
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+        it('should return 422 for bad inputs', (done) => {
+            UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                chai.request(server)
+                    .post('/api/profile/filters')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send({ min_age: 0})
+                    .end((err, res) => {
+                        res.should.have.status(422);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        res.body.should.have.property('error');
+                        done();
+                    });
+            });
+        });
+        it('should return 200 for valid inputs', (done) => {
+            UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                chai.request(server)
+                    .post('/api/profile/filters')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send({
+                        min_age: 20,
+                        max_age: 40,
+                        max_distance: 100,
+                        gender: 'M'
+                    })
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        done();
+                    });
+            });
+        });
+    });
+
 });

@@ -27,7 +27,7 @@ const auth = {
     }),
     loadUser: (req, res, next) => {
         const {payload: {id}} = req;
-        UsersModel.findOne({where: {_id: id}}).then((user) => {
+        UsersModel.findOne({_id: id}).then((user) => {
             if (!user) {
                 return res.sendStatus(400);
             }
