@@ -22,7 +22,11 @@ describe('User filters validator', () => {
         expect(usersFiltersValidator.validate({min_age: 18, max_age: 80, max_distance: 4, gender: 'M'}).error).to.be.not.null;
         expect(usersFiltersValidator.validate({min_age: 18, max_age: 80, max_distance: 181, gender: 'M'}).error).to.be.not.null;
         expect(usersFiltersValidator.validate({min_age: 18, max_age: 80, max_distance: 10, gender: 'A'}).error).to.be.not.null;
+        expect(usersFiltersValidator.validate({min_age: 18.1, max_age: 80, max_distance: 10, gender: 'M'}).error).to.be.not.null;
+        expect(usersFiltersValidator.validate({min_age: 18, max_age: 80.2, max_distance: 10, gender: 'M'}).error).to.be.not.null;
+        expect(usersFiltersValidator.validate({min_age: 18, max_age: 80, max_distance: 10.1, gender: 'M'}).error).to.be.not.null;
         expect(usersFiltersValidator.validate({min_age: 'a', max_age: 'b', max_distance: 'c', gender: 10}).error).to.be.not.null;
+        expect(usersFiltersValidator.validate({min_age: 20, max_age: 18, max_distance: 5, gender: 'M'}).error).to.be.not.null;
         done();
     });
     it('should succeed on good params', (done) => {
