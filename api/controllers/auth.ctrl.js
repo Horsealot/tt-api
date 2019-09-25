@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const UserModel = mongoose.model('User');
-const Logger = require('./../utils/logger');
+const Logger = require('@logger');
 
-const FirebaseService = require('./../services/firebase');
-const NexmoService = require('./../services/nexmo');
+const FirebaseService = require('@api/services/firebase');
+const NexmoService = require('@api/services/nexmo');
 
 const self = {
     authFirebase: async (uid, accessToken) => {

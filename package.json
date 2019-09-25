@@ -23,6 +23,7 @@
     "firebase-admin": "^8.6.0",
     "helmet": "^3.21.0",
     "i18next": "^17.0.14",
+    "module-alias": "^2.2.1",
     "mongoose": "^5.7.0",
     "morgan": "^1.9.1",
     "nexmo": "^2.4.2",
@@ -30,5 +31,10 @@
     "passport-local": "^1.0.0",
     "sinon": "^7.4.2",
     "winston": "^3.2.1"
+  },
+  "_moduleAliases": {
+    "@api": "api",
+    "@models": "api/models",
+    "@logger": "api/utils/logger"
   }
 }

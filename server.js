@@ -10,6 +10,8 @@ const helmet = require('helmet');
 const passport = require('passport');
 const router = express.Router();
 
+require('module-alias/register');
+
 // Databases
 require('./api/models');
 

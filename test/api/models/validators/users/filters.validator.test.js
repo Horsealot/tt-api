@@ -1,11 +1,12 @@
 process.env.NODE_ENV = 'test';
 
+require('module-alias/register');
 require('dotenv').config({path: '.env.test'});
 
 const chai = require('chai');
 const expect = chai.expect;
 
-const usersFiltersValidator = require('./../../../../../api/models/validators/users/filters.validator');
+const usersFiltersValidator = require('@models/validators/users/filters.validator');
 
 describe('User filters validator', () => {
     it('should failed on missing params', (done) => {

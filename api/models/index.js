@@ -1,7 +1,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const logger = require('./../utils/logger');
+const Logger = require('@logger');
 
 const host = process.env.DB_HOST;
 const port = process.env.DB_PORT;
@@ -16,9 +16,9 @@ require('./schemas/user');
 
 var db = mongoose.connection;
 db.on('error', () => {
-    logger.error(`DB\tDatabase connection error`);
+    Logger.error(`DB\tDatabase connection error`);
     console.error.bind(console, 'DB\tconnection error:')
 });
 db.once('open', function () {
-    logger.info(`DB\tDatabase MongoDb connected`);
+    Logger.info(`DB\tDatabase MongoDb connected`);
 });

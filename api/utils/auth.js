@@ -1,6 +1,5 @@
 const jwt = require('express-jwt');
 const mongoose = require('mongoose');
-require('./../models');
 const UsersModel = mongoose.model('User');
 
 const getTokenFromHeaders = (req) => {

@@ -1,6 +1,7 @@
 //During the test the env variable is set to test
 process.env.NODE_ENV = 'test';
 
+require('module-alias/register');
 require('dotenv').config({path: '.env.test'});
 
 //Require the dev-dependencies
@@ -9,13 +10,13 @@ const sinon = require('sinon');
 const mongoose = require('mongoose');
 const expect = chai.expect;
 
-require('./../../../api/models');
+require('@models');
 const UserModel = mongoose.model('User');
 
-const {AuthError} = require('../../../api/errors');
-const AuthController = require('./../../../api/controllers/auth.ctrl');
-const FirebaseService = require('./../../../api/services/firebase');
-const NexmoService = require('./../../../api/services/nexmo');
+const {AuthError} = require('@api/errors');
+const AuthController = require('@api/controllers/auth.ctrl');
+const FirebaseService = require('@api/services/firebase');
+const NexmoService = require('@api/services/nexmo');
 
 const Hydrator = require('./../../hydrators');
 

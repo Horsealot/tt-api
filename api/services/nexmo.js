@@ -1,6 +1,6 @@
 'use strict';
 
-const {AuthError} = require('../errors');
+const {AuthError} = require('@api/errors');
 
 const Nexmo = require('nexmo');
 
@@ -9,7 +9,7 @@ const apiSecret = process.env.NEXMO_API_SECRET;
 if (!apiKey) throw new Error("Missing env variable NEXMO_API_KEY");
 if (!apiSecret) throw new Error("Missing env variable NEXMO_API_SECRET");
 
-const Logger = require('./../utils/logger');
+const Logger = require('@api/utils/logger');
 
 const nexmo = new Nexmo({
     apiKey,

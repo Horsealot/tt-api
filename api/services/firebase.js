@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
-const {AuthError} = require('./../errors');
-const Logger = require('./../utils/logger');
+const {AuthError} = require('@api/errors');
+const Logger = require('@api/utils/logger');
 
 let serviceAccount = require('./../../private_config/triktrak-150e7-firebase-adminsdk-6lbpy-633239f6a5');
 admin.initializeApp({

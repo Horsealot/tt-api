@@ -1,8 +1,9 @@
 //During the test the env variable is set to test
 process.env.NODE_ENV = 'test';
 
+require('module-alias/register');
 require('dotenv').config({path: '.env.test'});
-//Require the dev-dependencies
+
 let chai = require('chai');
 let expect = chai.expect;
 let chaiHttp = require('chai-http');
@@ -11,7 +12,7 @@ let should = chai.should();
 let sinon = require('sinon');
 let mongoose = require('mongoose');
 
-require('./../../../api/models');
+require('@models');
 const UserModel = mongoose.model('User');
 
 const Hydrator = require('./../../hydrators');

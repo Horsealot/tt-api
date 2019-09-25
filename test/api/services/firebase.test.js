@@ -1,6 +1,7 @@
 //During the test the env variable is set to test
 process.env.NODE_ENV = 'test';
 
+require('module-alias/register');
 require('dotenv').config({path: '.env.test'});
 
 //Require the dev-dependencies
@@ -8,9 +9,9 @@ const chai = require('chai');
 const sinon = require('sinon');
 const expect = chai.expect;
 const admin = require('firebase-admin');
-const {AuthError} = require('../../../api/errors');
+const {AuthError} = require('@api/errors');
 
-const FirebaseService = require('./../../../api/services/firebase');
+const FirebaseService = require('@api/services/firebase');
 
 describe('Firebase service', () => {
 

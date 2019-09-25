@@ -1,6 +1,6 @@
 const passport = require('passport');
 
-const AuthController = require('../controllers/auth.ctrl');
+const AuthController = require('@api/controllers/auth.ctrl');
 
 module.exports = (router) => {
 
