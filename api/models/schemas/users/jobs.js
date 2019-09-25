@@ -5,7 +5,7 @@ module.exports = new Schema({
         type: String,
         required: true
     },
-    institution: {
+    company: {
         type: String,
         required: true
     }

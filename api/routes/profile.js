@@ -12,7 +12,7 @@ module.exports = (router) => {
         res.send(ProfileController.getProfileNomenclature());
     });
 
-    router.post('/profile/filters', auth.required, auth.loadUser, validator(filtersValidator, 'body'), async (req, res) => {
+    router.put('/profile/filters', auth.required, auth.loadUser, validator(filtersValidator, 'body'), async (req, res) => {
         try {
             const user = await ProfileController.updateUserFilters(req.user, req.body);
             res.send(user);
@@ -22,7 +22,7 @@ module.exports = (router) => {
         }
     });
 
-    router.post('/profile/jobs', auth.required, auth.loadUser, validator(jobsValidator, 'body'), async (req, res) => {
+    router.put('/profile/jobs', auth.required, auth.loadUser, validator(jobsValidator, 'body'), async (req, res) => {
         try {
             const user = await ProfileController.updateUserJobs(req.user, req.body);
             res.send(user);

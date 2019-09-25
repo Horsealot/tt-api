@@ -13,28 +13,28 @@ describe('User filters validator', () => {
         expect(jobsFiltersValidator.validate({}).error).to.be.not.null;
         expect(jobsFiltersValidator.validate([{}]).error).to.be.not.null;
         expect(jobsFiltersValidator.validate([{title: 'Community Manager'}]).error).to.be.not.null;
-        expect(jobsFiltersValidator.validate([{institution: 'Community Manager'}]).error).to.be.not.null;
+        expect(jobsFiltersValidator.validate([{company: 'Community Manager'}]).error).to.be.not.null;
         done();
     });
     it('should failed on bad params', (done) => {
-        expect(jobsFiltersValidator.validate([{title: 'Community Manager', institution: 11}]).error).to.be.not.null;
-        expect(jobsFiltersValidator.validate([{title: 12, institution: 'TrikTrak'}]).error).to.be.not.null;
+        expect(jobsFiltersValidator.validate([{title: 'Community Manager', company: 11}]).error).to.be.not.null;
+        expect(jobsFiltersValidator.validate([{title: 12, company: 'TrikTrak'}]).error).to.be.not.null;
         done();
     });
     it('should succeed on good params', (done) => {
         expect(jobsFiltersValidator.validate([]).error).to.be.undefined;
         expect(jobsFiltersValidator.validate([{
             title: 'Community Manager',
-            institution: 'Trik Trak'
+            company: 'Trik Trak'
         }]).error).to.be.undefined;
         expect(jobsFiltersValidator.validate([
             {
                 title: 'Community Manager',
-                institution: 'Trik Trak'
+                company: 'Trik Trak'
             },
             {
                 title: 'Intern',
-                institution: 'Linkedin'
+                company: 'Linkedin'
             }
         ]).error).to.be.undefined;
         done();

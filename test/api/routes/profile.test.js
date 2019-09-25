@@ -61,7 +61,7 @@ describe('Profile Route', () => {
     describe('POST /profile/filters', () => {
         it('should not accept an unauthenticated request', (done) => {
             chai.request(server)
-                .post('/api/profile/filters')
+                .put('/api/profile/filters')
                 .send({})
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -71,7 +71,7 @@ describe('Profile Route', () => {
         it('should return 422 for bad inputs', (done) => {
             UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
                 chai.request(server)
-                    .post('/api/profile/filters')
+                    .put('/api/profile/filters')
                     .set('Authorization', 'Bearer ' + user.generateJWT())
                     .send({min_age: 0})
                     .end((err, res) => {
@@ -86,7 +86,7 @@ describe('Profile Route', () => {
         it('should return 200 for valid inputs', (done) => {
             UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
                 chai.request(server)
-                    .post('/api/profile/filters')
+                    .put('/api/profile/filters')
                     .set('Authorization', 'Bearer ' + user.generateJWT())
                     .send({
                         min_age: 20,
@@ -110,7 +110,7 @@ describe('Profile Route', () => {
     describe('POST /profile/jobs', () => {
         it('should not accept an unauthenticated request', (done) => {
             chai.request(server)
-                .post('/api/profile/jobs')
+                .put('/api/profile/jobs')
                 .send({})
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -120,7 +120,7 @@ describe('Profile Route', () => {
         it('should return 422 for bad inputs', (done) => {
             UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
                 chai.request(server)
-                    .post('/api/profile/jobs')
+                    .put('/api/profile/jobs')
                     .set('Authorization', 'Bearer ' + user.generateJWT())
                     .send({})
                     .end((err, res) => {
@@ -135,11 +135,11 @@ describe('Profile Route', () => {
         it('should return 200 for valid inputs', (done) => {
             UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
                 chai.request(server)
-                    .post('/api/profile/jobs')
+                    .put('/api/profile/jobs')
                     .set('Authorization', 'Bearer ' + user.generateJWT())
                     .send([{
                         title: 'Fullstack',
-                        institution: 'TrikTrak'
+                        company: 'TrikTrak'
                     }])
                     .end((err, res) => {
                         res.should.have.status(200);

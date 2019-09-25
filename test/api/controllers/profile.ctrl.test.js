@@ -69,11 +69,11 @@ describe('User Controller', () => {
                 return ProfileController.updateUserJobs(user, [
                     {
                         title: 'Fullstack',
-                        institution: 'TrikTrak'
+                        company: 'TrikTrak'
                     },
                     {
                         title: 'Community Manager',
-                        institution: 'RDS'
+                        company: 'RDS'
                     },
                 ]);
             }).then(() => {
@@ -81,9 +81,9 @@ describe('User Controller', () => {
             }).then((user) => {
                 expect(user.jobs).to.be.length(2);
                 expect(user.jobs[0].title).to.be.equal('Fullstack');
-                expect(user.jobs[0].institution).to.be.equal('TrikTrak');
+                expect(user.jobs[0].company).to.be.equal('TrikTrak');
                 expect(user.jobs[1].title).to.be.equal('Community Manager');
-                expect(user.jobs[1].institution).to.be.equal('RDS');
+                expect(user.jobs[1].company).to.be.equal('RDS');
                 done();
             });
         })
