@@ -39,7 +39,7 @@ describe('User Controller', () => {
     });
 
     describe('UpdateUserFilters', () => {
-        it('should refuse invalid parameters', (done) => {
+        it('should update user filters', (done) => {
             Hydrators.init().then(() => {
                 return UserModel.findOne({email: 'john.doe@dummy.com'});
             }).then((user) => {
@@ -56,6 +56,34 @@ describe('User Controller', () => {
                 expect(user.filters.max_age).to.be.equal(45);
                 expect(user.filters.max_distance).to.be.equal(111);
                 expect(user.filters.gender).to.be.equal('M');
+                done();
+            });
+        })
+    });
+
+    describe('Update User Jobs', () => {
+        it('should update user jobs', (done) => {
+            Hydrators.init().then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                return ProfileController.updateUserJobs(user, [
+                    {
+                        title: 'Fullstack',
+                        institution: 'TrikTrak'
+                    },
+                    {
+                        title: 'Community Manager',
+                        institution: 'RDS'
+                    },
+                ]);
+            }).then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                expect(user.jobs).to.be.length(2);
+                expect(user.jobs[0].title).to.be.equal('Fullstack');
+                expect(user.jobs[0].institution).to.be.equal('TrikTrak');
+                expect(user.jobs[1].title).to.be.equal('Community Manager');
+                expect(user.jobs[1].institution).to.be.equal('RDS');
                 done();
             });
         })
