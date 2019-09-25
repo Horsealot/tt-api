@@ -73,7 +73,7 @@ describe('Profile Route', () => {
                 chai.request(server)
                     .post('/api/profile/filters')
                     .set('Authorization', 'Bearer ' + user.generateJWT())
-                    .send({ min_age: 0})
+                    .send({min_age: 0})
                     .end((err, res) => {
                         res.should.have.status(422);
                         res.should.be.json;
@@ -122,7 +122,7 @@ describe('Profile Route', () => {
                 chai.request(server)
                     .post('/api/profile/jobs')
                     .set('Authorization', 'Bearer ' + user.generateJWT())
-                    .send({ })
+                    .send({})
                     .end((err, res) => {
                         res.should.have.status(422);
                         res.should.be.json;

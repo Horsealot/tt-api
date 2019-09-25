@@ -6,7 +6,7 @@ const UserModel = mongoose.model('User');
 
 module.exports = {
     init: () => {
-        return UserModel.deleteMany({}).then(() =>  {
+        return UserModel.deleteMany({}).then(() => {
             const userActive1 = new UserModel({
                 active: true,
                 date_of_birth: new Date(),

@@ -23,7 +23,10 @@ describe('User filters validator', () => {
     });
     it('should succeed on good params', (done) => {
         expect(jobsFiltersValidator.validate([]).error).to.be.undefined;
-        expect(jobsFiltersValidator.validate([{title: 'Community Manager', institution: 'Trik Trak'}]).error).to.be.undefined;
+        expect(jobsFiltersValidator.validate([{
+            title: 'Community Manager',
+            institution: 'Trik Trak'
+        }]).error).to.be.undefined;
         expect(jobsFiltersValidator.validate([
             {
                 title: 'Community Manager',
@@ -33,7 +36,7 @@ describe('User filters validator', () => {
                 title: 'Intern',
                 institution: 'Linkedin'
             }
-            ]).error).to.be.undefined;
+        ]).error).to.be.undefined;
         done();
     });
 });

@@ -18,7 +18,7 @@ describe('Firebase service', () => {
     /**
      * Restore firebase stub
      */
-    afterEach( function () {
+    afterEach(function () {
         sinon.restore();
     });
 
