@@ -88,4 +88,35 @@ describe('User Controller', () => {
             });
         })
     });
+
+    describe('Update User Studies', () => {
+        it('should update user studies', (done) => {
+            Hydrators.init().then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                return ProfileController.updateUserStudies(user, [
+                    {
+                        title: 'Engineering degree',
+                        institution: 'ECAM',
+                        graduation_date: '2008-09-15T15:53:00'
+                    },
+                    {
+                        title: 'Bachelor degree',
+                        institution: 'RDS'
+                    },
+                ]);
+            }).then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                expect(user.studies).to.be.length(2);
+                expect(user.studies[0].title).to.be.equal('Engineering degree');
+                expect(user.studies[0].institution).to.be.equal('ECAM');
+                expect(user.studies[0].graduation_date).to.be.eql(new Date('2008-09-15T15:53:00'));
+                expect(user.studies[1].title).to.be.equal('Bachelor degree');
+                expect(user.studies[1].institution).to.be.equal('RDS');
+                expect(user.studies[1].graduation_date).to.be.undefined;
+                done();
+            });
+        })
+    });
 });

@@ -10,7 +10,6 @@ module.exports = new Schema({
         required: true
     },
     graduation_date: {
-        type: Date,
-        required: true
+        type: Date
     },
 }, {_id: false});

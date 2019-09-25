@@ -105,7 +105,7 @@ describe('Profile Route', () => {
     });
 
     /*
-    * Test the /POST profile filters route
+    * Test the /POST profile jobs route
     */
     describe('POST /profile/jobs', () => {
         it('should not accept an unauthenticated request', (done) => {
@@ -140,6 +140,53 @@ describe('Profile Route', () => {
                     .send([{
                         title: 'Fullstack',
                         company: 'TrikTrak'
+                    }])
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        done();
+                    });
+            });
+        });
+    });
+
+    /*
+    * Test the /POST profile studies route
+    */
+    describe('POST /profile/studies', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .put('/api/profile/studies')
+                .send({})
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+        it('should return 422 for bad inputs', (done) => {
+            UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                chai.request(server)
+                    .put('/api/profile/studies')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send({})
+                    .end((err, res) => {
+                        res.should.have.status(422);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        res.body.should.have.property('error');
+                        done();
+                    });
+            });
+        });
+        it('should return 200 for valid inputs', (done) => {
+            UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                chai.request(server)
+                    .put('/api/profile/studies')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send([{
+                        title: 'Engineering degree',
+                        institution: 'ECAM'
                     }])
                     .end((err, res) => {
                         res.should.have.status(200);

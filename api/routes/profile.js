@@ -3,6 +3,7 @@ const validator = require('@api/utils/validator');
 
 const filtersValidator = require('@models/validators/users/filters.validator');
 const jobsValidator = require('@models/validators/users/jobs.validator');
+const studiesValidator = require('@models/validators/users/studies.validator');
 
 const ProfileController = require('@api/controllers/profile.ctrl');
 
@@ -25,6 +26,16 @@ module.exports = (router) => {
     router.put('/profile/jobs', auth.required, auth.loadUser, validator(jobsValidator, 'body'), async (req, res) => {
         try {
             const user = await ProfileController.updateUserJobs(req.user, req.body);
+            res.send(user);
+        } catch (e) {
+            console.log(e);
+            res.status(500).send({error: e.message});
+        }
+    });
+
+    router.put('/profile/studies', auth.required, auth.loadUser, validator(studiesValidator, 'body'), async (req, res) => {
+        try {
+            const user = await ProfileController.updateUserStudies(req.user, req.body);
             res.send(user);
         } catch (e) {
             console.log(e);

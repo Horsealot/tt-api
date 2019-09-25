@@ -8,7 +8,7 @@ const expect = chai.expect;
 
 const jobsFiltersValidator = require('@models/validators/users/jobs.validator');
 
-describe('User filters validator', () => {
+describe('User jobs validator', () => {
     it('should failed on missing params', (done) => {
         expect(jobsFiltersValidator.validate({}).error).to.be.not.null;
         expect(jobsFiltersValidator.validate([{}]).error).to.be.not.null;

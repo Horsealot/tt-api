@@ -9,6 +9,10 @@ module.exports = {
         user.jobs = jobs;
         return await user.save();
     },
+    updateUserStudies: async (user, studies) => {
+        user.studies = studies;
+        return await user.save();
+    },
     getProfileNomenclature: () => {
         return converter.getProfileNomenclature();
     }
