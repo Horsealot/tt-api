@@ -13,8 +13,8 @@ const jobsSchema = require('./users/jobs');
 const studiesSchema = require('./users/studies');
 const filtersSchema = require('./users/filters');
 
-const DateUtils = require('../../utils/date');
-const converter = require('./../converters');
+const DateUtils = require('@api/utils/date');
+const converter = require('@models/converters');
 const {locale} = require('./../../utils/locale');
 
 var UserSchema = new Schema({
@@ -28,7 +28,6 @@ var UserSchema = new Schema({
     firstname: String,
     lastname: String,
     phone: Number,
-    phone_indicative: String,
     email: String,
     hash: String,
     salt: String,

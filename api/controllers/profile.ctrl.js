@@ -1,6 +1,9 @@
 const converter = require('@models/converters');
 
 module.exports = {
+    getProfile: (loggedInUser) => {
+        return loggedInUser;
+    },
     updateUserFilters: async (user, filters) => {
         user.filters = filters;
         return await user.save();
