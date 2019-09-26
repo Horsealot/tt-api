@@ -3,7 +3,6 @@
 require('dotenv').config();
 
 const express = require('express');
-const formData = require('express-form-data');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -37,7 +36,6 @@ app.use(helmet());
 app.use(require('morgan')('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({limit: '5mb'}));
-app.use(formData.parse());
 app.use(passport.initialize());
 
 routes(router);

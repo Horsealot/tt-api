@@ -56,9 +56,9 @@ describe('Profile Route', () => {
     });
 
     /*
-    * Test the /POST profile filters route
+    * Test the /PUT profile filters route
     */
-    describe('POST /profile/filters', () => {
+    describe('PUT /profile/filters', () => {
         it('should not accept an unauthenticated request', (done) => {
             chai.request(server)
                 .put('/api/profile/filters')
@@ -105,9 +105,9 @@ describe('Profile Route', () => {
     });
 
     /*
-    * Test the /POST profile jobs route
+    * Test the /PUT profile jobs route
     */
-    describe('POST /profile/jobs', () => {
+    describe('PUT /profile/jobs', () => {
         it('should not accept an unauthenticated request', (done) => {
             chai.request(server)
                 .put('/api/profile/jobs')
@@ -152,9 +152,9 @@ describe('Profile Route', () => {
     });
 
     /*
-    * Test the /POST profile studies route
+    * Test the /PUT profile studies route
     */
-    describe('POST /profile/studies', () => {
+    describe('PUT /profile/studies', () => {
         it('should not accept an unauthenticated request', (done) => {
             chai.request(server)
                 .put('/api/profile/studies')
@@ -192,6 +192,36 @@ describe('Profile Route', () => {
                         res.should.have.status(200);
                         res.should.be.json;
                         res.body.should.be.a('object');
+                        done();
+                    });
+            });
+        });
+    });
+
+    /*
+    * Test the /POST profile upload route
+    */
+    describe('POST /profile/upload', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .post('/api/profile/upload')
+                .send({})
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+        it('should return 422 for bad inputs', (done) => {
+            UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                chai.request(server)
+                    .post('/api/profile/upload?position=0')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send({})
+                    .end((err, res) => {
+                        res.should.have.status(422);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        res.body.should.have.property('error');
                         done();
                     });
             });

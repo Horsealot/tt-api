@@ -1,5 +1,9 @@
 const converter = require('@models/converters');
 
+const {refreshUserPublicPictures} = require('@api/services/userPicture');
+
+const PictureResponse = require('./users/picture.response');
+
 class ProfileResponse {
     constructor(user) {
         this.id = user._id;
@@ -20,7 +24,7 @@ class ProfileResponse {
         this.kids_expectation = user.kids_expectation ? user.kids_expectation : null;
         this.religion = user.religion ? user.religion : null;
         this.political_affiliation = user.political_affiliation ? user.political_affiliation : null;
-        this.pictures = user.pictures ? user.pictures : [];
+        this.pictures = (user.pictures ? user.pictures : []).map((picture) => new PictureResponse(picture));
         this.jobs = user.jobs ? user.jobs : [];
         this.studies = user.studies ? user.studies : [];
         this.lairs = user.lairs ? user.lairs : [];

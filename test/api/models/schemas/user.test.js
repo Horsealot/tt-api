@@ -70,4 +70,26 @@ describe('User model', () => {
             done();
         });
     });
+    describe('Are Picture Expired', () => {
+        it('should return true for one expired picture', (done) => {
+            var oneMonthAgo = new Date();
+            oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
+            var inOneMonth = new Date();
+            inOneMonth.setDate(inOneMonth.getDate() + 30);
+            const user = new UserModel({
+                pictures: [
+                    {
+                        source: 'expired picture',
+                        expired_at: oneMonthAgo
+                    },
+                    {
+                        source: 'valid picture',
+                        expired_at: inOneMonth
+                    }
+                ]
+            });
+            expect(user.arePicturesExpired()).to.be.equal(true);
+            done();
+        });
+    });
 });

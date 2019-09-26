@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken');
  */
 const geopointSchema = require('./geopoint');
 const jobsSchema = require('./users/jobs');
+const pictureSchema = require('./users/picture');
 const studiesSchema = require('./users/studies');
 const filtersSchema = require('./users/filters');
 
@@ -28,6 +29,7 @@ var UserSchema = new Schema({
     firstname: String,
     lastname: String,
     phone: Number,
+    storageDirectory: String,
     email: String,
     hash: String,
     salt: String,
@@ -50,13 +52,7 @@ var UserSchema = new Schema({
         type: String,
         enum: locale
     },
-    pictures: [
-        {
-            created_at: {type: Date},
-            link: String,
-            order: Number
-        }
-    ],
+    pictures: [pictureSchema],
     studies: [studiesSchema],
     jobs: [jobsSchema],
     lairs: [
@@ -167,6 +163,17 @@ UserSchema.methods.generateJWT = function () {
         id: this._id,
         exp: parseInt(expirationDate.getTime() / 1000, 10),
     }, 'secret');
+};
+
+/**
+ * Are user public pictures expired (within the next 7 days)
+ * @returns {boolean}
+ */
+UserSchema.methods.arePicturesExpired = function () {
+    for (var i = 0; i < this.pictures.length; i++) {
+        if (this.pictures[i].expired_at <= new Date()) return true;
+    }
+    return false;
 };
 
 /**

@@ -1,6 +1,7 @@
 const jwt = require('express-jwt');
 const mongoose = require('mongoose');
 const UsersModel = mongoose.model('User');
+const Logger = require('@logger');
 
 const getTokenFromHeaders = (req) => {
     const {headers: {authorization}} = req;
@@ -33,7 +34,7 @@ const auth = {
             req.user = user;
             next();
         }).catch((err) => {
-            console.log(err);
+            Logger.error(`auth.js\tLoad user failed: ${err.message}`);
             return res.sendStatus(400);
         });
     },

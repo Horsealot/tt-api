@@ -15,6 +15,7 @@ const Hydrators = require('./../../hydrators');
 
 require('@models');
 const UserModel = mongoose.model('User');
+const ObjectID = require('mongodb').ObjectID;
 
 //Our parent block
 describe('User Controller', () => {
@@ -118,5 +119,152 @@ describe('User Controller', () => {
                 done();
             });
         })
+    });
+
+    describe('Upload Picture', () => {
+        it('should add the picture at the end', (done) => {
+            Hydrators.init().then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                return ProfileController.uploadPicture(user, 'my-picture-path');
+            }).then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                expect(user.pictures).to.be.length(1);
+                expect(user.pictures[0].source).to.be.equal('my-picture-path');
+                return user;
+            }).then((user) => {
+                return ProfileController.uploadPicture(user, 'my-second-picture-path');
+            }).then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                expect(user.pictures).to.be.length(2);
+                expect(user.pictures[0].source).to.be.equal('my-picture-path');
+                expect(user.pictures[1].source).to.be.equal('my-second-picture-path');
+                done();
+            });
+        });
+        it('should insert the picture at the right position', (done) => {
+            Hydrators.init().then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                return ProfileController.uploadPicture(user, 'my-picture-path');
+            }).then((user) => {
+                return ProfileController.uploadPicture(user, 'my-second-picture-path');
+            }).then((user) => {
+                return ProfileController.uploadPicture(user, 'my-replacing-second-picture-path', 2);
+            }).then((user) => {
+                return ProfileController.uploadPicture(user, 'my-picture-path-on-last-position', 3);
+            }).then((user) => {
+                return ProfileController.uploadPicture(user, 'my-picture-path-with-overflow-position', 20);
+            }).then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                expect(user.pictures).to.be.length(5);
+                expect(user.pictures[0].source).to.be.equal('my-picture-path');
+                expect(user.pictures[1].source).to.be.equal('my-replacing-second-picture-path');
+                expect(user.pictures[2].source).to.be.equal('my-picture-path-on-last-position');
+                expect(user.pictures[3].source).to.be.equal('my-second-picture-path');
+                expect(user.pictures[4].source).to.be.equal('my-picture-path-with-overflow-position');
+                done();
+            });
+        })
+    });
+
+    describe('Update User Pictures', () => {
+        it('should reorder the pictures', (done) => {
+            const idPicture1 = new ObjectID();
+            const idPicture2 = new ObjectID();
+            const idPicture3 = new ObjectID();
+            const user = new UserModel({
+                pictures: [
+                    {
+                        _id: idPicture1,
+                        source: 'picture-1',
+                    },
+                    {
+                        _id: idPicture2,
+                        source: 'picture-2',
+                    },
+                    {
+                        _id: idPicture3,
+                        source: 'picture-3',
+                    }
+                ]
+            });
+
+            user.save().then((user) => {
+                ProfileController.updateUserPictures(user, [idPicture2.toString(), idPicture1.toString(), idPicture3.toString()]).then((user) => {
+                    expect(user.pictures).to.be.length(3);
+                    expect(user.pictures[0]._id).to.be.eq(idPicture2);
+                    expect(user.pictures[0].source).to.be.equal('picture-2');
+                    expect(user.pictures[1]._id).to.be.eq(idPicture1);
+                    expect(user.pictures[1].source).to.be.equal('picture-1');
+                    expect(user.pictures[2]._id).to.be.eq(idPicture3);
+                    expect(user.pictures[2].source).to.be.equal('picture-3');
+                    done();
+                });
+            });
+        });
+        it('should remove the picture', (done) => {
+            const idPicture1 = new ObjectID();
+            const idPicture2 = new ObjectID();
+            const idPicture3 = new ObjectID();
+            const user = new UserModel({
+                pictures: [
+                    {
+                        _id: idPicture1,
+                        source: 'picture-1',
+                    },
+                    {
+                        _id: idPicture2,
+                        source: 'picture-2',
+                    },
+                    {
+                        _id: idPicture3,
+                        source: 'picture-3',
+                    }
+                ]
+            });
+
+            user.save().then((user) => {
+                ProfileController.updateUserPictures(user, [idPicture2.toString(), idPicture1.toString()]).then((user) => {
+                    expect(user.pictures).to.be.length(2);
+                    expect(user.pictures[0]._id).to.be.eq(idPicture2);
+                    expect(user.pictures[0].source).to.be.equal('picture-2');
+                    expect(user.pictures[1]._id).to.be.eq(idPicture1);
+                    expect(user.pictures[1].source).to.be.equal('picture-1');
+                    done();
+                });
+            });
+        });
+        it('should remove all the picture', (done) => {
+            const idPicture1 = new ObjectID();
+            const idPicture2 = new ObjectID();
+            const idPicture3 = new ObjectID();
+            const user = new UserModel({
+                pictures: [
+                    {
+                        _id: idPicture1,
+                        source: 'picture-1',
+                    },
+                    {
+                        _id: idPicture2,
+                        source: 'picture-2',
+                    },
+                    {
+                        _id: idPicture3,
+                        source: 'picture-3',
+                    }
+                ]
+            });
+
+            user.save().then((user) => {
+                ProfileController.updateUserPictures(user, []).then((user) => {
+                    expect(user.pictures).to.be.length(0);
+                    done();
+                });
+            });
+        });
     });
 });
