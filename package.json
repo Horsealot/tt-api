@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node ./bin/www",
-    "test": "mocha --exit --recursive --timeout 10000"
+    "test": "nyc mocha --exit --recursive --timeout 10000"
   },
   "author": "",
   "license": "ISC",
@@ -32,6 +32,8 @@
     "nexmo": "^2.4.2",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
     "sinon": "^7.4.2",
     "winston": "^3.2.1"
   },
@@ -39,5 +41,8 @@
     "@api": "api",
     "@models": "api/models",
     "@logger": "api/utils/logger"
+  },
+  "devDependencies": {
+    "nyc": "^14.1.1"
   }
 }

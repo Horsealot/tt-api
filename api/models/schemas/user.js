@@ -13,6 +13,7 @@ const jobsSchema = require('./users/jobs');
 const pictureSchema = require('./users/picture');
 const studiesSchema = require('./users/studies');
 const filtersSchema = require('./users/filters');
+const spotifySchema = require('./users/spotify');
 
 const DateUtils = require('@api/utils/date');
 const converter = require('@models/converters');
@@ -118,6 +119,9 @@ var UserSchema = new Schema({
         validate: {
             validator: Number.isInteger,
         }
+    },
+    spotify: {
+        type: spotifySchema
     }
 });
 

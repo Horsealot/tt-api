@@ -25,6 +25,8 @@ class UserResponse {
         this.kids_expectation = user.kids_expectation;
         this.religion = user.religion;
         this.political_affiliation = user.political_affiliation;
+        this.artists = user.spotify ? user.spotify.artists : [];
+        this.tracks = user.spotify ? user.spotify.tracks : [];
     }
 }
 

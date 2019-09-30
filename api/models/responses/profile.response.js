@@ -29,6 +29,8 @@ class ProfileResponse {
         this.studies = user.studies ? user.studies : [];
         this.lairs = user.lairs ? user.lairs : [];
         this.locale = user.locale;
+        this.artists = user.spotify ? user.spotify.artists : [];
+        this.tracks = user.spotify ? user.spotify.tracks : [];
     }
 }
 

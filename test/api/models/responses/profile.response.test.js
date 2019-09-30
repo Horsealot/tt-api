@@ -60,6 +60,8 @@ describe('Profile Response', () => {
             expect(profile).to.have.property('jobs');
             expect(profile).to.have.property('studies');
             expect(profile).to.have.property('lairs');
+            expect(profile).to.have.property('tracks');
+            expect(profile).to.have.property('artists');
             done();
         });
     });
