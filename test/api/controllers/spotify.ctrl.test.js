@@ -30,9 +30,6 @@ describe('Spotify Controller', () => {
         sinon.restore();
     });
 
-    /*
-    * Test the get Profile Nomenclature
-    */
     describe('Link user', () => {
         it('should fail on a Spotify exception', (done) => {
             const linkUserStub = sinon.stub(SpotifyService, 'linkUser').throws(new Error(''));
@@ -86,6 +83,58 @@ describe('Spotify Controller', () => {
                         done();
                     });
                 })
+            });
+        });
+    });
+
+    describe('De-link user', () => {
+        it('should fail on a Spotify exception', (done) => {
+            const delinkUserStub = sinon.stub(SpotifyService, 'delinkUser').throws(new Error(''));
+            UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
+                try {
+                    SpotifyController.delinkUser(user);
+                    expect(false).to.be.true;
+                } catch (e) {
+                    expect(delinkUserStub.calledOnce).to.be.true;
+                    done();
+                }
+            });
+        });
+        it('should save and return a user and its tracks and artists', (done) => {
+            const delinkUserStub = sinon.stub(SpotifyService, 'delinkUser').returns();
+            UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
+                user.spotify = {
+                    tracks: [
+                        {
+                            name: 'Track1',
+                            url: 'url1'
+                        },
+                        {
+                            name: 'Track2',
+                            url: 'url2'
+                        },
+                    ],
+                    artists: [
+                        {
+                            name: 'Artist1',
+                            url: 'url-a-1'
+                        },
+                        {
+                            name: 'Artist2',
+                            url: 'url-a-2'
+                        }
+                    ]
+                };
+                return user.save();
+            }).then((user) => {
+                return SpotifyController.delinkUser(user);
+            }).then((user) => {
+                expect(delinkUserStub.calledOnce).to.be.true;
+                expect(user.spotify).to.be.null;
+                UserModel.findOne({email: 'john.doe@dummy.com'}, (err, dbUser) => {
+                    expect(dbUser.spotify).to.be.null;
+                    done();
+                });
             });
         });
     });

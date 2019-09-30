@@ -17,4 +17,12 @@ module.exports = (router) => {
             res.status(503).send({error: e.message});
         }
     });
+    router.delete('/spotify/authorize', auth.required, auth.loadUser, async (req, res) => {
+        try {
+            const user = await SpotifyController.delinkUser(req.user);
+            res.send(new ProfileResponse(user));
+        } catch (e) {
+            res.status(503).send({error: e.message});
+        }
+    });
 };

@@ -119,4 +119,61 @@ describe('Spotify Route', () => {
             });
         });
     });
+
+    /*
+    * Test the /DELETE authorize route
+    */
+    describe('DELETE /spotify/authorize', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .delete('/api/spotify/authorize')
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .delete('/api/spotify/authorize')
+                .set('Authorization', 'Bearer ' + 'BADJWT')
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+        it('should 503 if an internal error occured', (done) => {
+            UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
+                const delinkStub = sinon.stub(SpotifyController, 'delinkUser').rejects(new Error("Invalid"));
+                chai.request(server)
+                    .delete('/api/spotify/authorize')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send()
+                    .end((err, res) => {
+                        expect(delinkStub.calledOnce).to.be.true;
+                        res.should.have.status(503);
+                        done();
+                    });
+            });
+        });
+        it('should return a UserResponse', (done) => {
+            UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
+                const delinkStub = sinon.stub(SpotifyController, 'delinkUser').returns(user);
+                chai.request(server)
+                    .delete('/api/spotify/authorize')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send()
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        res.body.should.not.have.property('hash');
+                        res.body.should.not.have.property('salt');
+                        expect(delinkStub.calledOnce).to.be.true;
+                        done();
+                    });
+            });
+        });
+    });
 });

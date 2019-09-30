@@ -25,4 +25,20 @@ module.exports = {
                 throw err;
             });
     },
+    delinkUser: (userId) => {
+        const options = {
+            method: 'DELETE',
+            uri: host + '/api/users/' + userId,
+            json: true // Automatically stringifies the body to JSON
+        };
+
+        return rp(options)
+            .then(function (parsedBody) {
+                return parsedBody;
+            })
+            .catch(function (err) {
+                Logger.error(`spotify.js\tError while requesting de-link user {${err.status}%${err.message}}`);
+                throw err;
+            });
+    },
 };

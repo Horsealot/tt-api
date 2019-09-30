@@ -13,4 +13,13 @@ module.exports = {
             throw e;
         }
     },
+    delinkUser: async (loggedInUser) => {
+        try {
+            await SpotifyService.delinkUser(loggedInUser.id);
+            loggedInUser.spotify = null;
+            return await loggedInUser.save();
+        } catch (e) {
+            throw e;
+        }
+    },
 };
