@@ -12,7 +12,6 @@ passport.use(new FacebookTokenStrategy({
     fbGraphVersion: 'v4.0',
     profileFields: ['id', 'displayName', 'name', 'emails', 'gender', 'friends', 'birthday']
 }, (accessToken, refreshToken, profile, done) => {
-    console.log(profile);
     profile.accessToken = accessToken;
     profile.refreshToken = refreshToken;
     return done(null, profile);
