@@ -16,6 +16,7 @@ class ProfileResponse {
         this.bio = user.bio ? user.bio : null;
         this.date_of_birth = user.date_of_birth ? user.date_of_birth : null;
         this.filters = user.filters;
+        this.notifications = user.notifications;
         this.gender = user.gender ? user.gender : null;
         this.physical_activity = user.physical_activity ? converter.getPhysicalActivity(user.physical_activity) : null;
         this.astrological_sign = user.astrological_sign ? user.astrological_sign : null;

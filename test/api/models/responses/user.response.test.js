@@ -33,6 +33,7 @@ describe('Profile Response', () => {
             expect(profile).to.not.have.property('created_at');
             expect(profile).to.not.have.property('last_updated_at');
             expect(profile).to.not.have.property('filters');
+            expect(profile).to.not.have.property('notifications');
             expect(profile).to.not.have.property('active');
             expect(profile).to.not.have.property('date_of_birth');
             done();

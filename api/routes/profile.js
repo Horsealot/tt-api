@@ -8,6 +8,7 @@ const picturePositionValidator = require('@models/validators/users/picturePositi
 const picturesValidator = require('@models/validators/users/pictures.validator');
 const jobsValidator = require('@models/validators/users/jobs.validator');
 const studiesValidator = require('@models/validators/users/studies.validator');
+const notificationsValidator = require('@models/validators/users/notifications.validator');
 
 const ProfileController = require('@api/controllers/profile.ctrl');
 const ProfileResponse = require('@models/responses/profile.response');
@@ -35,6 +36,8 @@ module.exports = (router) => {
             res.send(new ProfileResponse(user));
         })
     });
+
+    router.put('/profile/notifications', auth.required, auth.loadUser, validator(notificationsValidator, 'body'), ProfileController.putNotifications);
 
     router.put('/profile/pictures', auth.required, auth.loadUser, validator(picturesValidator, 'body'), async (req, res) => {
         const user = await ProfileController.updateUserPictures(req.user, req.body);

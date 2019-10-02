@@ -7,7 +7,7 @@ require('dotenv').config({path: '.env.test'});
 let chai = require('chai');
 let expect = chai.expect;
 let chaiHttp = require('chai-http');
-let server = require('../../../server');
+let server = require('./../../../server');
 let should = chai.should();
 let sinon = require('sinon');
 let mongoose = require('mongoose');
@@ -192,6 +192,36 @@ describe('Profile Route', () => {
                         res.should.have.status(200);
                         res.should.be.json;
                         res.body.should.be.a('object');
+                        done();
+                    });
+            });
+        });
+    });
+
+    /*
+    * Test the /PUT profile notifications route
+    */
+    describe('PUT /profile/notifications', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .put('/api/profile/notifications')
+                .send({})
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+        it('should return 422 for bad inputs', (done) => {
+            UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                chai.request(server)
+                    .put('/api/profile/notifications')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send({})
+                    .end((err, res) => {
+                        res.should.have.status(422);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        res.body.should.have.property('error');
                         done();
                     });
             });

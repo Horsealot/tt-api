@@ -2,11 +2,24 @@ const converter = require('@models/converters');
 
 const {refreshUserPublicPictures} = require('@api/services/userPicture');
 const Logger = require('@logger');
+const ProfileResponse = require('@models/responses/profile.response');
 
 module.exports = {
     getProfile: (loggedInUser) => {
         if (loggedInUser.arePicturesExpired()) refreshUserPublicPictures(loggedInUser);
         return loggedInUser;
+    },
+    putNotifications: async (req, res) => {
+        let user = req.user;
+        Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his notications`);
+        user.notifications = req.body;
+        try {
+            await user.save();
+            res.send(new ProfileResponse(user));
+        } catch (e) {
+            Logger.error(`profile.ctrl.js\tputNotifications: {${e.message}}`);
+            res.sendStatus(503);
+        }
     },
     uploadPicture: async (user, picturePath, position) => {
         Logger.debug(`profile.ctrl.js\tUser ${user._id} uploaded a picture`);

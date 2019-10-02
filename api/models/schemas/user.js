@@ -14,6 +14,7 @@ const pictureSchema = require('./users/picture');
 const studiesSchema = require('./users/studies');
 const filtersSchema = require('./users/filters');
 const spotifySchema = require('./users/spotify');
+const notificationsSchema = require('./users/notifications');
 
 const DateUtils = require('@api/utils/date');
 const TokenUtils = require('@api/utils/token');
@@ -134,6 +135,11 @@ var UserSchema = new Schema({
     },
     spotify: {
         type: spotifySchema
+    },
+    notifications: {
+        type: notificationsSchema,
+        default: notificationsSchema,
+        required: true
     }
 });
 

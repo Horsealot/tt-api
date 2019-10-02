@@ -7,7 +7,9 @@ require('dotenv').config({path: '.env.test'});
 //Require the dev-dependencies
 const mongoose = require('mongoose');
 const chai = require('chai');
+const chaiHttp = require('chai-http');
 const expect = chai.expect;
+const server = require('../../../server');
 
 const ProfileController = require('@api/controllers/profile.ctrl');
 
@@ -266,5 +268,50 @@ describe('User Controller', () => {
                 });
             });
         });
+    });
+
+    describe('Update User notifications', () => {
+        it('should update user notifications', (done) => {
+            Hydrators.init().then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                chai.request(server)
+                    .put('/api/profile/notifications')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send({
+                        new_message: true,
+                        new_game: true,
+                        new_game_answer: false,
+                        new_macaroon: false,
+                        round_reminder: false,
+                        selection_reminder: true,
+                        new_favorite: false,
+                        macaroon_accepted: false,
+                        player_nearby: false,
+                        signup_nearby: true,
+                        company_updates: false,
+                    })
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                            expect(user.notifications).to.be.an('object');
+                            expect(user.notifications.new_message).to.be.true;
+                            expect(user.notifications.new_game).to.be.true;
+                            expect(user.notifications.new_game_answer).to.be.false;
+                            expect(user.notifications.new_macaroon).to.be.false;
+                            expect(user.notifications.round_reminder).to.be.false;
+                            expect(user.notifications.selection_reminder).to.be.true;
+                            expect(user.notifications.new_favorite).to.be.false;
+                            expect(user.notifications.macaroon_accepted).to.be.false;
+                            expect(user.notifications.player_nearby).to.be.false;
+                            expect(user.notifications.signup_nearby).to.be.true;
+                            expect(user.notifications.company_updates).to.be.false;
+                            done();
+                        });
+                    });
+            });
+        })
     });
 });

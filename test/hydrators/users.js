@@ -22,6 +22,19 @@ module.exports = {
                     max_distance: 100,
                     gender: 'F'
                 },
+                notifications: {
+                    new_message: true,
+                    new_game: true,
+                    new_game_answer: true,
+                    new_macaroon: true,
+                    round_reminder: true,
+                    selection_reminder: true,
+                    new_favorite: true,
+                    macaroon_accepted: true,
+                    player_nearby: true,
+                    signup_nearby: true,
+                    company_updates: true,
+                },
                 height: 180,
                 locale: 'fr',
             });

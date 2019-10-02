@@ -8,8 +8,10 @@ const myFormat = printf(({level, message, label, timestamp}) => {
     return `${timestamp}\t${level}\t${message}`;
 });
 
+const level = process.env.NODE_ENV === 'test' ? 'none' : 'debug';
+
 const logger = createLogger({
-    level: 'debug',
+    level: level,
     format: combine(
         timestamp(),
         myFormat

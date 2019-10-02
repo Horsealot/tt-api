@@ -32,15 +32,14 @@ describe('Spotify Controller', () => {
 
     describe('Link user', () => {
         it('should fail on a Spotify exception', (done) => {
-            const linkUserStub = sinon.stub(SpotifyService, 'linkUser').throws(new Error(''));
-            UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
-                try {
-                    SpotifyController.linkUser(user, 'WRONG_CODE');
-                    expect(false).to.be.true;
-                } catch (e) {
-                    expect(linkUserStub.calledOnce).to.be.true;
-                    done();
-                }
+            const linkUserStub = sinon.stub(SpotifyService, 'linkUser').rejects(new Error(''));
+            UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                return SpotifyController.linkUser(user, 'WRONG_CODE');
+            }).then(() => {
+                expect(false).to.be.true;
+            }).catch(() => {
+                expect(linkUserStub.calledOnce).to.be.true;
+                done();
             });
         });
         it('should save and return a user and its tracks and artists', (done) => {
@@ -89,15 +88,14 @@ describe('Spotify Controller', () => {
 
     describe('De-link user', () => {
         it('should fail on a Spotify exception', (done) => {
-            const delinkUserStub = sinon.stub(SpotifyService, 'delinkUser').throws(new Error(''));
-            UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
-                try {
-                    SpotifyController.delinkUser(user);
-                    expect(false).to.be.true;
-                } catch (e) {
-                    expect(delinkUserStub.calledOnce).to.be.true;
-                    done();
-                }
+            const delinkUserStub = sinon.stub(SpotifyService, 'delinkUser').rejects(new Error(''));
+            UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                return SpotifyController.delinkUser(user);
+            }).then(() => {
+                expect(false).to.be.true;
+            }).catch(() => {
+                expect(delinkUserStub.calledOnce).to.be.true;
+                done();
             });
         });
         it('should save and return a user and its tracks and artists', (done) => {

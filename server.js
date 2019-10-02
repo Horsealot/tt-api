@@ -34,7 +34,9 @@ const app = express();
 //Configure our app
 app.use(cors());
 app.use(helmet());
-app.use(require('morgan')('dev'));
+if (process.env.NODE_ENV !== 'test') {
+    app.use(require('morgan')('dev'));
+}
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({limit: '5mb'}));
 app.use(passport.initialize());

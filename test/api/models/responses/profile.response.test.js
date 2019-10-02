@@ -46,6 +46,7 @@ describe('Profile Response', () => {
             expect(profile).to.have.property('bio');
             expect(profile).to.have.property('date_of_birth');
             expect(profile).to.have.property('filters');
+            expect(profile).to.have.property('notifications');
             // expect(profile).to.have.property('country_code');
             expect(profile).to.have.property('gender');
             expect(profile).to.have.property('physical_activity');
