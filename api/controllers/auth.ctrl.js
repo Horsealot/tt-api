@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const UserModel = mongoose.model('User');
 const Logger = require('@logger');
 
+const passport = require('passport');
+
 const FirebaseService = require('@api/services/firebase');
 const NexmoService = require('@api/services/nexmo');
 
@@ -14,6 +16,33 @@ const self = {
             Logger.error(e);
             throw e;
         }
+    },
+    authFacebook: async (req, res) => {
+        const id = req.payload ? req.payload.id : null;
+        let user;
+        if (req.payload && req.payload.id) {
+            user = await UserModel.findOne({_id: id});
+        }
+        passport.authenticate('facebook-token', {session: false}, async (err, profile, info) => {
+            if (err) {
+                if (err.oauthError) {
+                    let oauthError = JSON.parse(err.oauthError.data);
+                    return res.status(503).send(oauthError.error.message);
+                }
+                return res.status(503).send(err);
+            } else {
+                if (user && await UserModel.findOne({'facebookProvider.id': profile.id, _id: {'$ne': id}})) {
+                    return res.status(409).send({error: 'FB account already linked'});
+                }
+                if (!user) {
+                    user = await UserModel.upsertFbUser(profile);
+                } else {
+                    user.setFromFacebook(profile);
+                    await user.save();
+                }
+                res.send(user);
+            }
+        })(req, res)
     },
     loginOrSignupByPhone: async (phone) => {
         try {

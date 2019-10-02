@@ -1,9 +1,9 @@
 "use strict";
 
 //Require Mongoose
+
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
-const jwt = require('jsonwebtoken');
 
 /**
  * Subdocuments
@@ -16,8 +16,10 @@ const filtersSchema = require('./users/filters');
 const spotifySchema = require('./users/spotify');
 
 const DateUtils = require('@api/utils/date');
+const TokenUtils = require('@api/utils/token');
 const converter = require('@models/converters');
 const {locale} = require('./../../utils/locale');
+const {castGender, authorizedGenders} = require("./users/gender");
 
 var UserSchema = new Schema({
     active: Boolean,
@@ -31,13 +33,23 @@ var UserSchema = new Schema({
     lastname: String,
     phone: Number,
     storageDirectory: String,
-    email: String,
+    email: {
+        type: String, trim: true,
+        match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    },
     hash: String,
     salt: String,
     bio: String,
+    facebookProvider: {
+        type: {
+            id: String,
+            token: String
+        },
+        select: false
+    },
     gender: {
         type: String,
-        enum: ['M', 'F']
+        enum: authorizedGenders
     },
     filters: {
         type: filtersSchema,
@@ -130,6 +142,47 @@ UserSchema.pre('save', function (next) {
     next();
 });
 
+/**
+ * Create or update user using his facebook data
+ * @param profile
+ * @returns {Promise<void>}
+ */
+UserSchema.statics.upsertFbUser = async function (profile) {
+    let user = await this.findOne({'facebookProvider.id': profile.id});
+    if (!user) {
+        user = new this();
+    }
+    user.setFromFacebook(profile);
+    await user.save();
+    return user;
+};
+
+/**
+ * Update user using his facebook data
+ * If data is already filled, we do not erase it using the one provided by Facebook
+ * @param fbProfile
+ */
+UserSchema.methods.setFromFacebook = function (fbProfile) {
+    if (!this.email
+        && fbProfile.emails
+        && fbProfile.emails.length
+        && fbProfile.emails[0].value
+    ) {
+        this.email = fbProfile.emails[0].value;
+    }
+    this.facebookProvider = {
+        id: fbProfile.id,
+        token: fbProfile.accessToken,
+        refreshToken: fbProfile.refreshToken
+    };
+    this.firstname = this.firstname ? this.firstname : fbProfile.name.givenName;
+    this.lastname = this.lastname ? this.lastname : fbProfile.name.familyName;
+    this.gender = this.gender ? this.gender : castGender(fbProfile.gender);
+    if (!this.date_of_birth && fbProfile._json.birthday) {
+        this.date_of_birth = Date.parse(fbProfile._json.birthday + ' 12:00:00');
+    }
+};
+
 
 /**
  * AUTH PART
@@ -159,14 +212,7 @@ UserSchema.methods.validatePassword = function (password) {
  * @returns {*}
  */
 UserSchema.methods.generateJWT = function () {
-    const today = new Date();
-    const expirationDate = new Date(today);
-    expirationDate.setDate(today.getDate() + 60);
-
-    return jwt.sign({
-        id: this._id,
-        exp: parseInt(expirationDate.getTime() / 1000, 10),
-    }, 'secret');
+    return TokenUtils.generateUserToken(this);
 };
 
 /**

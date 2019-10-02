@@ -26,6 +26,7 @@ const PORT = process.env.PORT || '8080';
 
 // Configure passport
 require('./api/config/passport');
+require('./api/config/facebook');
 
 // App
 const app = express();

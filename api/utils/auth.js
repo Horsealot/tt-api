@@ -2,6 +2,7 @@ const jwt = require('express-jwt');
 const mongoose = require('mongoose');
 const UsersModel = mongoose.model('User');
 const Logger = require('@logger');
+const TokenUtils = require('./token');
 
 const getTokenFromHeaders = (req) => {
     const {headers: {authorization}} = req;
@@ -15,12 +16,12 @@ const getTokenFromHeaders = (req) => {
 
 const auth = {
     required: jwt({
-        secret: 'secret',
+        secret: TokenUtils.tokenSecret,
         userProperty: 'payload',
         getToken: getTokenFromHeaders,
     }),
     optional: jwt({
-        secret: 'secret',
+        secret: TokenUtils.tokenSecret,
         userProperty: 'payload',
         getToken: getTokenFromHeaders,
         credentialsRequired: false,
@@ -37,7 +38,7 @@ const auth = {
             Logger.error(`auth.js\tLoad user failed: ${err.message}`);
             return res.sendStatus(400);
         });
-    },
+    }
 };
 
 module.exports = auth;

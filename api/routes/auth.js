@@ -1,6 +1,9 @@
 const passport = require('passport');
 
 const AuthController = require('@api/controllers/auth.ctrl');
+const auth = require('@api/utils/auth');
+
+const mongoose = require('mongoose');
 
 module.exports = (router) => {
 
@@ -24,6 +27,8 @@ module.exports = (router) => {
             return res.sendStatus(401).info;
         })(req, res, next);
     });
+
+    router.post('/auth/facebook', auth.optional, AuthController.authFacebook);
 
     /**
      * Authenticate using Firebase mobile auth

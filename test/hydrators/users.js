@@ -13,7 +13,6 @@ module.exports = {
                 firstname: "John",
                 lastname: "Doe",
                 phone: 629290000,
-                phone_indicative: "33",
                 email: "john.doe@dummy.com",
                 bio: "John Doe bio",
                 gender: 'M',
@@ -27,6 +26,27 @@ module.exports = {
                 locale: 'fr',
             });
             return userActive1.save();
+        }).then(() => {
+            const userActive2 = new UserModel({
+                active: true,
+                date_of_birth: new Date(),
+                firstname: "Pat",
+                lastname: "Hutson",
+                facebookProvider: {
+                    id: '1'
+                },
+                bio: "Pat Hutson bio",
+                gender: 'M',
+                filters: {
+                    min_age: 18,
+                    max_age: 40,
+                    max_distance: 100,
+                    gender: 'F'
+                },
+                height: 180,
+                locale: 'fr',
+            });
+            return userActive2.save();
         });
     }
 };
