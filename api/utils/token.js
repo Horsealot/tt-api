@@ -1,10 +1,18 @@
 const jwt = require('jsonwebtoken');
 
-const TOKEN = process.env.TOKEN_SECRET;
-if (!TOKEN) throw new Error("Missing env variable TOKEN_SECRET");
+const token = process.env.TOKEN_SECRET;
+if (!token) throw new Error("Missing env variable TOKEN_SECRET");
+
+const internalToken = process.env.INTERNAL_TOKEN_SECRET;
+if (!internalToken) throw new Error("Missing env variable INTERNAL_TOKEN_SECRET");
 
 const auth = {
-    tokenSecret: TOKEN,
+    tokenSecret: token,
+    /**
+     * Generate a JWT Token for external API access
+     * @param user
+     * @returns {*}
+     */
     generateUserToken: (user) => {
         const today = new Date();
         const expirationDate = new Date(today);
@@ -13,7 +21,17 @@ const auth = {
         return jwt.sign({
             id: user._id,
             exp: parseInt(expirationDate.getTime() / 1000, 10),
-        }, TOKEN);
+        }, token);
+    },
+    /**
+     * Generate a JWT Token for internal call between services
+     * @param user
+     * @returns {*}
+     */
+    generateInternalUserToken: (user) => {
+        return jwt.sign({
+            id: user._id,
+        }, internalToken);
     }
 };
 

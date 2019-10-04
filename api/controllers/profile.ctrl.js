@@ -3,6 +3,7 @@ const converter = require('@models/converters');
 const {refreshUserPublicPictures} = require('@api/services/userPicture');
 const Logger = require('@logger');
 const ProfileResponse = require('@models/responses/profile.response');
+const LairService = require('@api/services/lairs');
 
 module.exports = {
     getProfile: (loggedInUser) => {
@@ -18,6 +19,18 @@ module.exports = {
             res.send(new ProfileResponse(user));
         } catch (e) {
             Logger.error(`profile.ctrl.js\tputNotifications: {${e.message}}`);
+            res.sendStatus(503);
+        }
+    },
+    putLairs: async (req, res) => {
+        let user = req.user;
+        Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his lairs`);
+        try {
+            user.lairs = await LairService.postUserLairs(user, req.body);
+            await user.save();
+            res.send(new ProfileResponse(user));
+        } catch (e) {
+            Logger.error(`profile.ctrl.js\tputLairs: {${e.message}}`);
             res.sendStatus(503);
         }
     },

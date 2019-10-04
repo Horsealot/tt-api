@@ -10,6 +10,7 @@ const {Schema} = mongoose;
  */
 const geopointSchema = require('./geopoint');
 const jobsSchema = require('./users/jobs');
+const lairsSchema = require('./users/lairs');
 const pictureSchema = require('./users/picture');
 const studiesSchema = require('./users/studies');
 const filtersSchema = require('./users/filters');
@@ -69,14 +70,7 @@ var UserSchema = new Schema({
     pictures: [pictureSchema],
     studies: [studiesSchema],
     jobs: [jobsSchema],
-    lairs: [
-        {
-            title: String,
-            institution: String,
-            start_date: {type: Date},
-            end_date: {type: Date}
-        }
-    ],
+    lairs: [lairsSchema],
     physical_activity: {
         type: Number,
         min: 0,
@@ -219,6 +213,14 @@ UserSchema.methods.validatePassword = function (password) {
  */
 UserSchema.methods.generateJWT = function () {
     return TokenUtils.generateUserToken(this);
+};
+
+/**
+ * Generate user JWT
+ * @returns {*}
+ */
+UserSchema.methods.generateInternalJWT = function () {
+    return TokenUtils.generateInternalUserToken(this);
 };
 
 /**

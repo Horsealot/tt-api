@@ -9,9 +9,11 @@ const mongoose = require('mongoose');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
+const sinon = require('sinon');
 const server = require('../../../server');
 
 const ProfileController = require('@api/controllers/profile.ctrl');
+const LairsService = require('@api/services/lairs');
 
 const Hydrators = require('./../../hydrators');
 
@@ -21,6 +23,10 @@ const ObjectID = require('mongodb').ObjectID;
 
 //Our parent block
 describe('User Controller', () => {
+
+    afterEach(() => {
+        sinon.restore();
+    });
 
     /*
     * Test the get Profile Nomenclature
@@ -308,6 +314,43 @@ describe('User Controller', () => {
                             expect(user.notifications.player_nearby).to.be.false;
                             expect(user.notifications.signup_nearby).to.be.true;
                             expect(user.notifications.company_updates).to.be.false;
+                            done();
+                        });
+                    });
+            });
+        })
+    });
+
+    describe('Update User Lairs', () => {
+        it('should call the Lair service and update the user', (done) => {
+            const postUserLairStub = sinon.stub(LairsService, 'postUserLairs').resolves([{
+                placeId: 'pid1',
+                name: 'Dummy lair',
+                address: '4 rue de longchamps',
+            }, {
+                placeId: 'pid2',
+                name: 'Dummy lair 2',
+                address: '8 rue de longchamps',
+            }]);
+            Hydrators.init().then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+
+                chai.request(server)
+                    .put('/api/profile/lairs')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send([
+                        'dummyId123'
+                    ])
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                            expect(user.lairs).to.be.length(2);
+                            expect(user.lairs[0].name).to.be.equal('Dummy lair');
+                            expect(user.lairs[1].name).to.be.equal('Dummy lair 2');
+                            expect(postUserLairStub.calledOnce).to.be.true;
                             done();
                         });
                     });

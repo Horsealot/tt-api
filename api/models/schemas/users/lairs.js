@@ -1,16 +1,16 @@
 const {Schema} = require('mongoose');
 
 module.exports = new Schema({
-    title: {
+    name: {
         type: String,
         required: true
     },
-    institution: {
+    address: {
         type: String,
         required: true
     },
-    graduation_date: {
-        type: Date,
+    placeId: {
+        type: String,
         required: true
-    },
-}, {_id: false});
+    }
+}, {_id: false, strict: false});

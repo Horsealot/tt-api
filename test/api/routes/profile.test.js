@@ -17,6 +17,8 @@ const UserModel = mongoose.model('User');
 
 const Hydrator = require('./../../hydrators');
 
+const ProfileController = require('@api/controllers/profile.ctrl');
+
 chai.use(chaiHttp);
 //Our parent block
 describe('Profile Route', () => {
@@ -24,6 +26,10 @@ describe('Profile Route', () => {
         Hydrator.init().then(() => {
             done();
         });
+    });
+
+    afterEach(() => {
+        sinon.restore();
     });
 
     /*
@@ -258,4 +264,34 @@ describe('Profile Route', () => {
         });
     });
 
+
+    /*
+    * Test the /PUT profile lairs route
+    */
+    describe('PUT /profile/lairs', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .put('/api/profile/lairs')
+                .send({})
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+        it('should return 422 for bad inputs', (done) => {
+            UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                chai.request(server)
+                    .put('/api/profile/lairs')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send({})
+                    .end((err, res) => {
+                        res.should.have.status(422);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        res.body.should.have.property('error');
+                        done();
+                    });
+            });
+        });
+    });
 });
