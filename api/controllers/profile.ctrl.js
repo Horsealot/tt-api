@@ -2,8 +2,11 @@ const converter = require('@models/converters');
 
 const {refreshUserPublicPictures} = require('@api/services/userPicture');
 const Logger = require('@logger');
+const UserResponse = require('@models/responses/user.response');
 const ProfileResponse = require('@models/responses/profile.response');
 const LairService = require('@api/services/lairs');
+
+const UserCache = require('@api/caches/users.cache');
 
 module.exports = {
     getProfile: (loggedInUser) => {
@@ -12,10 +15,10 @@ module.exports = {
     },
     putNotifications: async (req, res) => {
         let user = req.user;
-        Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his notications`);
         user.notifications = req.body;
         try {
             await user.save();
+            Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his notications`);
             res.send(new ProfileResponse(user));
         } catch (e) {
             Logger.error(`profile.ctrl.js\tputNotifications: {${e.message}}`);
@@ -24,10 +27,25 @@ module.exports = {
     },
     putLairs: async (req, res) => {
         let user = req.user;
-        Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his lairs`);
         try {
             user.lairs = await LairService.postUserLairs(user, req.body);
             await user.save();
+            Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his lairs`);
+            res.send(new ProfileResponse(user));
+        } catch (e) {
+            Logger.error(`profile.ctrl.js\tputLairs: {${e.message}}`);
+            res.sendStatus(503);
+        }
+    },
+    putDetails: async (req, res) => {
+        let user = req.user;
+        for (let userProperties in req.body) {
+            user[userProperties] = req.body[userProperties];
+        }
+        try {
+            await user.save();
+            Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his profile details`);
+            await UserCache.set(user.id, new UserResponse(user));
             res.send(new ProfileResponse(user));
         } catch (e) {
             Logger.error(`profile.ctrl.js\tputLairs: {${e.message}}`);

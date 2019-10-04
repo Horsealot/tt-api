@@ -7,6 +7,12 @@ const mongoose = require('mongoose');
 
 module.exports = (router) => {
 
+    router.get('/admin', (req, res) => {
+        mongoose.model('User').find({}).then((users) => {
+            res.send(users.map((user) => user.toAuthJSON()));
+        });
+    });
+
     /**
      * Authenticate using email/password
      */

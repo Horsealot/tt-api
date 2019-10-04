@@ -16,6 +16,7 @@ require('./api/models');
 
 const routes = require('./api/routes');
 const logger = require('./api/utils/logger');
+require('./api/services/cache');
 
 // Load locales
 require('./api/utils/locale');

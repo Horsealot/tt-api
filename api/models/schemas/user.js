@@ -34,7 +34,6 @@ var UserSchema = new Schema({
     firstname: String,
     lastname: String,
     phone: Number,
-    storageDirectory: String,
     email: {
         type: String, trim: true,
         match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
