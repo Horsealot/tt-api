@@ -209,6 +209,62 @@ describe('Auth Controller', () => {
         });
     });
 
+    describe('Auth facebook on an other existing user (email) but unauthentified', () => {
+        it('should login the existing user', (done) => {
+            const existingUser = new UserModel({
+                email: 'facebook.user@dummy.com',
+                firstname: 'Fitzpatrick'
+            });
+            sinon.stub(passport, "authenticate").callsFake((strategy, options, callback) => {
+                callback(null,
+                    {
+                        provider: 'facebook',
+                        id: '10',
+                        displayName: 'Tho Last',
+                        name: {familyName: 'Last', givenName: 'Tho', middleName: ''},
+                        gender: 'Female',
+                        emails: [{value: 'facebook.user@dummy.com'}],
+                        photos: [
+                            {
+                                value: 'https://graph.facebook.com/v2.6/10157549849444812/picture?type=large'
+                            }
+                        ],
+                        _raw: '{"name":"Tho Last","last_name":"Last","first_name":"Tho"}',
+                        _json: {
+                            name: 'Tho Last',
+                            last_name: 'Last',
+                            first_name: 'Tho'
+                        },
+                        accessToken: 'ACCESS_TOKEN'
+                    }, null);
+                return (req, res, next) => {
+                };
+            });
+            existingUser.save().then((existingUser) => {
+                chai.request(server)
+                    .post('/api/auth/facebook')
+                    .send({
+                        access_token: 'TEST_TOKEN'
+                    })
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        UserModel.find({
+                            email: 'facebook.user@dummy.com',
+                        }).then((createdUsers) => {
+                            expect(createdUsers).to.be.length(1);
+                            expect(createdUsers[0]).to.be.not.null;
+                            expect(createdUsers[0].id).to.be.eq(existingUser.id);
+                            expect(createdUsers[0].gender).to.be.equal('F');
+                            expect(createdUsers[0].firstname).to.be.equal('Fitzpatrick');
+                            expect(createdUsers[0].email).to.be.equal('facebook.user@dummy.com');
+                            expect(createdUsers[0].lastname).to.be.equal('Last');
+                            done();
+                        });
+                    });
+            });
+        });
+    });
+
     describe('Auth facebook on an existing user', () => {
         it('should return 409 for a fb account already linked to another account', (done) => {
             sinon.stub(passport, "authenticate").callsFake((strategy, options, callback) => {
@@ -397,4 +453,65 @@ describe('Auth Controller', () => {
             });
         });
     });
+    describe('Auth facebook on a logged user but with a fb email linked to another account', () => {
+        it('should set the facebook data on the logged user without the email and set a duplicate_of on the other account', (done) => {
+            sinon.stub(passport, "authenticate").callsFake((strategy, options, callback) => {
+                callback(null,
+                    {
+                        provider: 'facebook',
+                        id: '2',
+                        displayName: 'Tho Last',
+                        name: {familyName: 'Last', givenName: 'Tho', middleName: ''},
+                        gender: 'Female',
+                        emails: [{value: 'john.doe@dummy.com'}], // Existing email
+                        photos: [
+                            {
+                                value: 'https://graph.facebook.com/v2.6/10157549849444812/picture?type=large'
+                            }
+                        ],
+                        _raw: '{"name":"Tho Last","last_name":"Last","first_name":"Tho"}',
+                        _json: {
+                            name: 'Tho Last',
+                            last_name: 'Last',
+                            first_name: 'Tho'
+                        },
+                        accessToken: 'NEW_ACCESS_TOKEN'
+                    }
+                    , null);
+                return (req, res, next) => {
+                };
+            });
+
+            const newUser = new UserModel({
+                active: true,
+                date_of_birth: new Date(),
+                firstname: "Pat",
+                bio: "John Doe bio",
+                locale: 'fr',
+            });
+            newUser.save().then((loggedInUser) => {
+                chai.request(server)
+                    .post('/api/auth/facebook')
+                    .set('Authorization', 'Bearer ' + loggedInUser.generateJWT())
+                    .send()
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        UserModel.findOne({
+                            _id: loggedInUser.id,
+                            'facebookProvider.id': '2',
+                            'facebookProvider.token': 'NEW_ACCESS_TOKEN'
+                        }).then((updatedUser) => {
+                            expect(updatedUser.firstname).to.be.equal('Pat');
+                            expect(updatedUser.lastname).to.be.equal('Last');
+                            expect(updatedUser.gender).to.be.equal('F');
+
+                            UserModel.findOne({email: 'john.doe@dummy.com'}).then((existingUser) => {
+                                expect(existingUser.duplicate_of.toString()).to.be.eq(updatedUser.id);
+                                done();
+                            });
+                        });
+                    });
+            });
+        });
+    })
 });

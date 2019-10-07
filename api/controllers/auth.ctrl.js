@@ -6,6 +6,7 @@ const passport = require('passport');
 
 const FirebaseService = require('@api/services/firebase');
 const NexmoService = require('@api/services/nexmo');
+const FacebookUtils = require('@api/utils/facebook');
 
 const self = {
     authFirebase: async (uid, accessToken) => {
@@ -31,15 +32,31 @@ const self = {
                 }
                 return res.status(503).send(err);
             } else {
-                if (user && await UserModel.findOne({'facebookProvider.id': profile.id, _id: {'$ne': id}})) {
+                let existingFbUser = await UserModel.findOne({'facebookProvider.id': profile.id, _id: {'$ne': id}});
+                if (user && existingFbUser && existingFbUser.id !== user.id) {
                     return res.status(409).send({error: 'FB account already linked'});
                 }
-                if (!user) {
-                    user = await UserModel.upsertFbUser(profile);
+
+                const fbMail = FacebookUtils.extractEmail(profile);
+                let existingMailUser = await UserModel.findOne({'email': fbMail});
+
+                if (user) {
+                    if (existingMailUser && existingMailUser.id !== user.id) {
+                        existingMailUser.duplicate_of = user._id;
+                        await existingMailUser.save();
+                        profile = FacebookUtils.eraseEmail(profile);
+                    }
                 } else {
-                    user.setFromFacebook(profile);
-                    await user.save();
+                    if (existingFbUser) {
+                        user = existingFbUser;
+                    } else if (existingMailUser) {
+                        user = existingMailUser;
+                    } else {
+                        user = new UserModel();
+                    }
                 }
+                user.setFromFacebook(profile);
+                await user.save();
                 res.send(user);
             }
         })(req, res)

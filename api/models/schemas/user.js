@@ -1,7 +1,6 @@
 "use strict";
 
 //Require Mongoose
-
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
@@ -17,6 +16,7 @@ const filtersSchema = require('./users/filters');
 const spotifySchema = require('./users/spotify');
 const notificationsSchema = require('./users/notifications');
 
+const FacebookUtils = require('@api/utils/facebook');
 const DateUtils = require('@api/utils/date');
 const TokenUtils = require('@api/utils/token');
 const converter = require('@models/converters');
@@ -36,6 +36,7 @@ var UserSchema = new Schema({
     phone: Number,
     email: {
         type: String, trim: true,
+        unique: true, sparse: true,
         match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
     },
     hash: String,
@@ -133,11 +134,15 @@ var UserSchema = new Schema({
         type: notificationsSchema,
         default: notificationsSchema,
         required: true
+    },
+    duplicate_of: {
+        type: Schema.Types.ObjectId
     }
 });
 
 UserSchema.pre('save', function (next) {
     this.last_updated_at = new Date();
+    if (!this.email) this.email = undefined;
     next();
 });
 
@@ -148,8 +153,16 @@ UserSchema.pre('save', function (next) {
  */
 UserSchema.statics.upsertFbUser = async function (profile) {
     let user = await this.findOne({'facebookProvider.id': profile.id});
+    let fbMail = FacebookUtils.extractEmail(profile);
+    let emailUser = await this.findOne({'email': fbMail});
+    // If we have no user for this FB Account
     if (!user) {
+        // We create a new one
         user = new this();
+        // Unless the fb email is linked to an user, in that case we link the fb account to this account
+        if (emailUser) {
+            user = emailUser;
+        }
     }
     user.setFromFacebook(profile);
     await user.save();
@@ -162,11 +175,8 @@ UserSchema.statics.upsertFbUser = async function (profile) {
  * @param fbProfile
  */
 UserSchema.methods.setFromFacebook = function (fbProfile) {
-    if (!this.email
-        && fbProfile.emails
-        && fbProfile.emails.length
-        && fbProfile.emails[0].value
-    ) {
+    let fbMail = FacebookUtils.extractEmail(fbProfile);
+    if (!this.email && fbMail) {
         this.email = fbProfile.emails[0].value;
     }
     this.facebookProvider = {
