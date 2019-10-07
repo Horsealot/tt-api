@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const uuidv4 = require('uuid/v4');
 
 const token = process.env.TOKEN_SECRET;
 if (!token) throw new Error("Missing env variable TOKEN_SECRET");
@@ -21,7 +22,9 @@ const auth = {
         return jwt.sign({
             id: user._id,
             exp: parseInt(expirationDate.getTime() / 1000, 10),
-        }, token);
+        }, token, {
+            jwtid: uuidv4()
+        });
     },
     /**
      * Generate a JWT Token for internal call between services

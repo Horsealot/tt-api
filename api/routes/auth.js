@@ -36,6 +36,12 @@ module.exports = (router) => {
 
     router.post('/auth/facebook', auth.optional, AuthController.authFacebook);
 
+    router.post('/auth/logout', auth.required, (req, res) => {
+        auth.revoke(req.payload, () => {
+            res.json({});
+        });
+    });
+
     /**
      * Authenticate using Firebase mobile auth
      */
