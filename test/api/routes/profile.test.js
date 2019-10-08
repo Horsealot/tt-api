@@ -323,4 +323,36 @@ describe('Profile Route', () => {
             });
         });
     });
+
+
+    /*
+    * Test the /POST profile visibility
+    */
+    describe('POST /profile/visibility', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .post('/api/profile/visibility')
+                .send({})
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+    });
+
+
+    /*
+    * Test the /DELETE profile visibility
+    */
+    describe('DELETE /profile/visibility', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .delete('/api/profile/visibility')
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+    });
 });

@@ -405,4 +405,54 @@ describe('User Controller', () => {
             });
         })
     });
+
+    describe('ReactivateProfile', () => {
+        it('should reactivate the user', (done) => {
+            Hydrators.init().then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                user.active = false;
+                return user.save();
+            }).then((user) => {
+                chai.request(server)
+                    .post('/api/profile/visibility')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send()
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                            expect(user.active).to.be.true;
+                            done();
+                        });
+                    });
+            });
+        })
+    });
+
+    describe('DeactivateProfile', () => {
+        it('should deactivate the user', (done) => {
+            Hydrators.init().then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                user.active = true;
+                return user.save();
+            }).then((user) => {
+                chai.request(server)
+                    .delete('/api/profile/visibility')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send()
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        UserModel.findOne({email: 'john.doe@dummy.com'}).then((user) => {
+                            expect(user.active).to.be.false;
+                            done();
+                        });
+                    });
+            });
+        })
+    });
 });

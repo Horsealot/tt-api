@@ -108,5 +108,27 @@ module.exports = {
     },
     getProfileNomenclature: () => {
         return converter.getProfileNomenclature();
+    },
+    reactivateProfile: async (req, res) => {
+        try {
+            Logger.debug(`profile.ctrl.js\tUser ${req.user._id} reactivated his account`);
+            req.user.active = true;
+            await req.user.save();
+            res.send(new ProfileResponse(req.user));
+        } catch (e) {
+            Logger.error(`profile.ctrl.js\treactivateProfile: {${e.message}}`);
+            res.sendStatus(503);
+        }
+    },
+    deactivateProfile: async (req, res) => {
+        try {
+            Logger.debug(`profile.ctrl.js\tUser ${req.user._id} reactivated his account`);
+            req.user.active = false;
+            await req.user.save();
+            res.send(new ProfileResponse(req.user));
+        } catch (e) {
+            Logger.error(`profile.ctrl.js\treactivateProfile: {${e.message}}`);
+            res.sendStatus(503);
+        }
     }
 };

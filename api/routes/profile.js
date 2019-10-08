@@ -45,6 +45,10 @@ module.exports = (router) => {
 
     router.put('/profile/details', auth.required, auth.loadUser, validator(detailsValidator, 'body'), ProfileController.putDetails);
 
+    router.post('/profile/visibility', auth.required, auth.loadUser, ProfileController.reactivateProfile);
+
+    router.delete('/profile/visibility', auth.required, auth.loadUser, ProfileController.deactivateProfile);
+
     router.put('/profile/pictures', auth.required, auth.loadUser, validator(picturesValidator, 'body'), async (req, res) => {
         const user = await ProfileController.updateUserPictures(req.user, req.body);
         res.send(new ProfileResponse(user));
