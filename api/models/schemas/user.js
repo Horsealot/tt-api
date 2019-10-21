@@ -207,13 +207,23 @@ UserSchema.methods.validateProfile = function () {
         this.status.reasons.filter((reason) => reason !== statusReasonsConverter.PROFILE_INCOMPLETE);
     }
     if(this.date_of_birth && DateUtils.getUserAge(this.date_of_birth) < 18) {
-        this.status.reasons.indexOf(statusReasonsConverter.USER_LOCKED) === -1 ?
-            this.status.reasons.push(statusReasonsConverter.USER_LOCKED) :
+        this.status.reasons.indexOf(statusReasonsConverter.USER_UNDERAGE) === -1 ?
+            this.status.reasons.push(statusReasonsConverter.USER_UNDERAGE) :
             null;
     } else {
-        this.status.reasons.filter((reason) => reason !== statusReasonsConverter.USER_LOCKED);
+        this.status.reasons.filter((reason) => reason !== statusReasonsConverter.USER_UNDERAGE);
     }
     this.status.locked = this.status.reasons.length > 0;
+};
+
+/**
+ * Set user coordinates
+ * @param lng
+ * @param lat
+ */
+UserSchema.methods.setCoordinates = function (lng, lat) {
+    if (!this.location) this.location = {};
+    this.location.coordinates = [lng, lat];
 };
 
 /**

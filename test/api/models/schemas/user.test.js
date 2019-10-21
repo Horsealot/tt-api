@@ -286,7 +286,7 @@ describe('User model', () => {
             });
             user.validateProfile();
             expect(user.status.locked).to.be.true;
-            expect(user.status.reasons.indexOf(statusReasons.MODERATION_UNDERAGE) >= 0).to.be.true;
+            expect(user.status.reasons.indexOf(statusReasons.USER_UNDERAGE) >= 0).to.be.true;
             done();
         });
         it('should not locked the user if he is over 18 years old', (done) => {
@@ -301,7 +301,7 @@ describe('User model', () => {
             });
             user.validateProfile();
             expect(user.status.locked).to.be.false;
-            expect(user.status.reasons.indexOf())
+            expect(user.status.reasons.indexOf());
             done();
         });
     })

@@ -6,7 +6,7 @@ const myFormat = printf(({level, message, label, timestamp}) => {
     return `${timestamp}\t${level}\t${message}`;
 });
 
-const level = process.env.NODE_ENV === 'test' ? 'none' : 'debug';
+const level = process.env.LOGGER_LEVEL ? process.env.LOGGER_LEVEL : 'info';
 
 const logger = createLogger({
     level: level,
