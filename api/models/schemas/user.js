@@ -11,6 +11,7 @@ const geopointSchema = require('./geopoint');
 const jobsSchema = require('./users/jobs');
 const lairsSchema = require('./users/lairs');
 const pictureSchema = require('./users/picture');
+const statusSchema = require('./users/status');
 const studiesSchema = require('./users/studies');
 const filtersSchema = require('./users/filters');
 const spotifySchema = require('./users/spotify');
@@ -20,10 +21,15 @@ const FacebookUtils = require('@api/utils/facebook');
 const DateUtils = require('@api/utils/date');
 const TokenUtils = require('@api/utils/token');
 const converter = require('@models/converters');
+const statusReasonsConverter = require('@models/converters/statusReasons');
 const {locale} = require('./../../utils/locale');
 const {castGender, authorizedGenders} = require("./users/gender");
 
 var UserSchema = new Schema({
+    status: {
+        type: statusSchema,
+        default: statusSchema
+    },
     active: Boolean,
     created_at: {type: Date, default: Date.now},
     last_updated_at: {type: Date, default: Date.now},
@@ -192,6 +198,23 @@ UserSchema.methods.setFromFacebook = function (fbProfile) {
     }
 };
 
+UserSchema.methods.validateProfile = function () {
+    if(!this.date_of_birth || !this.gender) {
+        this.status.reasons.indexOf(statusReasonsConverter.PROFILE_INCOMPLETE) === -1 ?
+            this.status.reasons.push(statusReasonsConverter.PROFILE_INCOMPLETE) :
+            null;
+    } else {
+        this.status.reasons.filter((reason) => reason !== statusReasonsConverter.PROFILE_INCOMPLETE);
+    }
+    if(this.date_of_birth && DateUtils.getUserAge(this.date_of_birth) < 18) {
+        this.status.reasons.indexOf(statusReasonsConverter.USER_LOCKED) === -1 ?
+            this.status.reasons.push(statusReasonsConverter.USER_LOCKED) :
+            null;
+    } else {
+        this.status.reasons.filter((reason) => reason !== statusReasonsConverter.USER_LOCKED);
+    }
+    this.status.locked = this.status.reasons.length > 0;
+};
 
 /**
  * AUTH PART

@@ -28,16 +28,29 @@ const auth = {
     }),
     loadUser: (req, res, next) => {
         const {payload: {id}} = req;
-        UsersModel.findOne({_id: id}).then((user) => {
+        return UsersModel.findOne({_id: id}).then((user) => {
             if (!user) {
-                return res.sendStatus(400);
+                res.sendStatus(400);
+            } else {
+                req.user = user;
+                next();
             }
-            req.user = user;
-            next();
         }).catch((err) => {
             Logger.error(`auth.js\tLoad user failed: ${err.message}`);
-            return res.sendStatus(400);
+            res.sendStatus(400);
         });
+    },
+    isUserAllowed: (req, res, next) => {
+        const {user} = req;
+        if(!user) {
+            Logger.error(`auth.js\tisUserAllowed must be used after loadUser`);
+            return res.sendStatus(500);
+        }
+        if(user.status.locked) {
+            Logger.info(`auth.js\tUser is not allowed to access this API`);
+            return res.sendStatus(401);
+        }
+        next();
     }
 };
 

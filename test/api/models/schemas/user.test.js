@@ -13,6 +13,8 @@ require('@models');
 const UserModel = mongoose.model('User');
 const Hydrator = require('./../../../hydrators');
 
+const statusReasons = require('@models/converters/statusReasons');
+
 //Our parent block
 describe('User model', () => {
     // beforeEach((done) => { //Before each test we empty the database
@@ -271,4 +273,36 @@ describe('User model', () => {
             });
         });
     });
+    describe('User legal validation', () => {
+        it('should locked the user if he is underage (18 years)', (done) => {
+            const user = new UserModel({
+                firstname: 'MyOldFirstName',
+                email: 'myold@dummy.com',
+                gender: 'F',
+                date_of_birth: new Date('2009-01-01'),
+                facebookProvider: {
+                    id: '10'
+                }
+            });
+            user.validateProfile();
+            expect(user.status.locked).to.be.true;
+            expect(user.status.reasons.indexOf(statusReasons.MODERATION_UNDERAGE) >= 0).to.be.true;
+            done();
+        });
+        it('should not locked the user if he is over 18 years old', (done) => {
+            const user = new UserModel({
+                firstname: 'MyOldFirstName',
+                email: 'myold@dummy.com',
+                gender: 'F',
+                date_of_birth: new Date('1989-01-01'),
+                facebookProvider: {
+                    id: '10'
+                }
+            });
+            user.validateProfile();
+            expect(user.status.locked).to.be.false;
+            expect(user.status.reasons.indexOf())
+            done();
+        });
+    })
 });

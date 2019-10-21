@@ -42,6 +42,7 @@ module.exports = {
         for (let userProperties in req.body) {
             user[userProperties] = req.body[userProperties];
         }
+        user.validateProfile();
         try {
             await user.save();
             Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his profile details`);

@@ -371,7 +371,7 @@ describe('User Controller', () => {
                         lastname: 'G',
                         height: 180,
                         email: 'john.d@dummy.com',
-                        date_of_birth: '2009-10-04T13:40:31Z',
+                        date_of_birth: '1989-10-04T13:40:31Z',
                         bio: 'User bio short',
                         physical_activity: 0,
                         astrological_sign: 0,
@@ -390,6 +390,7 @@ describe('User Controller', () => {
                             expect(user.firstname).to.be.equal('J');
                             expect(user.lastname).to.be.equal('G');
                             expect(user.height).to.be.equal(180);
+                            expect(user.status.locked).to.be.false;
                             expect(user.bio).to.be.equal('User bio short');
                             expect(user.physical_activity).to.be.equal(0);
                             expect(user.astrological_sign).to.be.equal(0);
@@ -403,7 +404,33 @@ describe('User Controller', () => {
                         });
                     });
             });
-        })
+        });
+        it('should flag the user if he is underage', (done) => {
+            Hydrators.init().then(() => {
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((user) => {
+                chai.request(server)
+                    .put('/api/profile/details')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send({
+                        firstname: 'J',
+                        email: 'john.d@dummy.com',
+                        date_of_birth: '2016-10-04T13:40:31Z',
+                        locale: 'fr'
+                    })
+                    .end((err, res) => {
+                        res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.should.be.a('object');
+                        UserModel.findOne({email: 'john.d@dummy.com'}).then((user) => {
+                            expect(user.firstname).to.be.equal('J');
+                            expect(user.status.locked).to.be.true;
+                            expect(user.locale).to.be.equal('fr');
+                            done();
+                        });
+                    });
+            });
+        });
     });
 
     describe('ReactivateProfile', () => {

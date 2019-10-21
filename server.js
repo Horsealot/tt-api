@@ -8,6 +8,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const passport = require('passport');
 const router = express.Router();
+const mongoSanitize = require('express-mongo-sanitize');
 
 require('module-alias/register');
 
@@ -40,6 +41,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({limit: '5mb'}));
+app.use(mongoSanitize());
 app.use(passport.initialize());
 
 routes(router);
