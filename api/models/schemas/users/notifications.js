@@ -45,4 +45,4 @@ module.exports = new Schema({
         type: Boolean,
         default: true
     },
-});
+}, {_id: 0});

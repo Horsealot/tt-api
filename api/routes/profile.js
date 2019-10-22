@@ -15,7 +15,7 @@ const detailsValidator = require('@models/validators/users/details.validator');
 const ProfileController = require('@api/controllers/profile.ctrl');
 const ProfileResponse = require('@models/responses/profile.response');
 
-const {userPictureUploader} = require('@api/services/userPicture');
+const {userPictureUploader, userValidationPictureUploader} = require('@api/services/userPicture');
 const uploaderMiddleware = userPictureUploader.single('picture');
 
 module.exports = (router) => {
@@ -38,6 +38,8 @@ module.exports = (router) => {
             res.send(new ProfileResponse(user));
         })
     });
+
+    router.post('/profile/upload/validation', auth.required, auth.loadUser, userValidationPictureUploader.single('picture'), ProfileController.uploadValidationPicture);
 
     router.put('/profile/notifications', auth.required, auth.loadUser, validator(notificationsValidator, 'body'), ProfileController.putNotifications);
 

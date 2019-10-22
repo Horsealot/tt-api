@@ -8,6 +8,11 @@ const LairService = require('@api/services/lairs');
 
 const UserCache = require('@api/caches/users.cache');
 
+const {userValidationPictureUploader} = require('@api/services/userPicture');
+const uploaderValidationMiddleware = userValidationPictureUploader.single('picture');
+const validationStatus = require('@models/converters/validationStatus');
+
+
 module.exports = {
     getProfile: (loggedInUser) => {
         if (loggedInUser.arePicturesExpired()) refreshUserPublicPictures(loggedInUser);
@@ -52,6 +57,23 @@ module.exports = {
             Logger.error(`profile.ctrl.js\tputLairs: {${e.message}}`);
             res.sendStatus(503);
         }
+    },
+    uploadValidationPicture: async (req, res) => {
+        Logger.debug(`profile.ctrl.js\tUser ${req.user._id} uploaded a validation picture`);
+        uploaderValidationMiddleware(req, res, async function (err) {
+            if (err) {
+                Logger.error(`profile.js\tError while uploading user validation picture {${err}}`);
+                return res.status(503).send({error: err.message});
+            }
+            req.user.validation = {
+                source: req.file.key,
+                status: validationStatus.WAITING_VALIDATION,
+                uploaded_at: new Date(),
+            };
+            await req.user.save();
+            res.sendStatus(200);
+
+        });
     },
     uploadPicture: async (user, picturePath, position) => {
         Logger.debug(`profile.ctrl.js\tUser ${user._id} uploaded a picture`);

@@ -16,6 +16,7 @@ const studiesSchema = require('./users/studies');
 const filtersSchema = require('./users/filters');
 const spotifySchema = require('./users/spotify');
 const notificationsSchema = require('./users/notifications');
+const validationStatusSchema = require('./users/validation');
 
 const FacebookUtils = require('@api/utils/facebook');
 const DateUtils = require('@api/utils/date');
@@ -139,6 +140,11 @@ var UserSchema = new Schema({
     notifications: {
         type: notificationsSchema,
         default: notificationsSchema,
+        required: true
+    },
+    validation: {
+        type: validationStatusSchema,
+        default: validationStatusSchema,
         required: true
     },
     duplicate_of: {

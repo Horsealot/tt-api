@@ -8,7 +8,7 @@ const s3 = require('@api/services/s3');
 const BUCKET_NAME = 'triktrak';
 const NB_OF_DAYS_BEFORE_EXPIRATION = 7;
 
-exports.userPictureUploader = multer({
+const pictureUploader = (pathFn) => multer({
     storage: multerS3({
         s3: s3,
         bucket: BUCKET_NAME,
@@ -19,11 +19,21 @@ exports.userPictureUploader = multer({
         },
         key: function (req, file, cb) {
             crypto.pseudoRandomBytes(16, function (err, raw) {
-                const prefix = 'pictures/' + (req.user ? req.user._id : 'general') + '/';
+                let prefix = 'pictures/general/';
+                if (typeof pathFn === 'function') prefix = 'pictures/' + pathFn(req) + '/';
                 cb(null, prefix + raw.toString('hex') + Date.now() + '.' + mime.extension(file.mimetype));
             });
         }
     })
+});
+
+exports.userPictureUploader = pictureUploader((req) => {
+    if (!req.user) throw new Error('Unauthorized, user must be loaded');
+    return req.user._id;
+});
+exports.userValidationPictureUploader = pictureUploader((req) => {
+    if (!req.user) throw new Error('Unauthorized, user must be loaded');
+    return req.user._id + '/validation';
 });
 
 exports.generatePublicPicture = (key) => {
