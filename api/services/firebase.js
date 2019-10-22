@@ -2,9 +2,11 @@ const admin = require('firebase-admin');
 const {AuthError} = require('@api/errors');
 const Logger = require('@api/utils/logger');
 
-let serviceAccount = require('./../../private_config/triktrak-150e7-firebase-adminsdk-6lbpy-633239f6a5');
+const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
+if (!adminConfig) throw new Error("Missing env variable FIREBASE_CONFIG");
+
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(adminConfig),
     databaseURL: "https://triktrak-150e7.firebaseio.com"
 });
 
