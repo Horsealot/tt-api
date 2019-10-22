@@ -1,0 +1,6 @@
+module.exports = {
+    NOT_VALIDATED: 0,
+    WAITING_VALIDATION: 1,
+    VALIDATION_REFUSED: 2,
+    VALIDATED: 3,
+};

@@ -1,13 +1,21 @@
-'use strict';
+const {createLogger, format, transports} = require('winston');
 
-const winston = require('winston');
+const {combine, timestamp, printf} = format;
 
-const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.simple()
+const myFormat = printf(({level, message, label, timestamp}) => {
+    return `${timestamp}\t${level}\t${message}`;
 });
-logger.add(new winston.transports.Console({
-    format: winston.format.simple()
-}));
+
+const level = process.env.LOGGER_LEVEL ? process.env.LOGGER_LEVEL : 'info';
+
+const logger = createLogger({
+    level: level,
+    format: combine(
+        timestamp(),
+        myFormat
+    ),
+    transports: [new transports.Console()]
+});
 
 module.exports = logger;
+

@@ -1,0 +1,6 @@
+.idea/*
+private_config/*
+.env*
+node_modules/*
+coverage/*
+.nyc_output/*

@@ -3,23 +3,32 @@
 require('dotenv').config();
 
 const express = require('express');
-const formData = require('express-form-data');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const errorHandler = require('errorhandler');
-const routes = require('./api/routes');
 const helmet = require('helmet');
-const logger = require('./api/utils/logger');
+const passport = require('passport');
 const router = express.Router();
+const mongoSanitize = require('express-mongo-sanitize');
 
+require('module-alias/register');
+
+// Databases
+require('./api/models');
+
+const routes = require('./api/routes');
+const logger = require('./api/utils/logger');
+require('./api/services/cache');
+
+// Load locales
 require('./api/utils/locale');
 
 // Constants
 const PORT = process.env.PORT || '8080';
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-// Databases
-require('./api/models');
+
+// Configure passport
+require('./api/config/passport');
+require('./api/config/facebook');
 
 // App
 const app = express();
@@ -27,19 +36,17 @@ const app = express();
 //Configure our app
 app.use(cors());
 app.use(helmet());
-app.use(require('morgan')('dev'));
+if (process.env.NODE_ENV !== 'test') {
+    app.use(require('morgan')('dev'));
+}
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({limit: '5mb'}));
-app.use(formData.parse());
-// app.use(express.static(path.join(__dirname, 'public')));
-// app.use(session({ secret: 'brainsecret-token', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
-
-if(!IS_PRODUCTION) {
-    app.use(errorHandler());
-}
+app.use(mongoSanitize());
+app.use(passport.initialize());
 
 routes(router);
 app.use('/api', router);
 
 logger.info(`SERVER\tRunning on port ${PORT}`);
-module.exports = app.listen(PORT);
+module.exports = app;
+// module.exports = app.listen(PORT);

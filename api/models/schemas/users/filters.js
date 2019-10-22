@@ -1,4 +1,4 @@
-const { Schema } = require('mongoose');
+const {Schema} = require('mongoose');
 
 module.exports = new Schema({
     min_age: {
@@ -7,8 +7,8 @@ module.exports = new Schema({
         max: 100,
         default: 18,
         required: true,
-        validate : {
-            validator : Number.isInteger,
+        validate: {
+            validator: Number.isInteger,
         }
     },
     max_age: {
@@ -17,8 +17,8 @@ module.exports = new Schema({
         max: 100,
         default: 50,
         required: true,
-        validate : {
-            validator : Number.isInteger,
+        validate: {
+            validator: Number.isInteger,
         }
     },
     max_distance: {
@@ -27,8 +27,8 @@ module.exports = new Schema({
         max: 180,
         default: 10,
         required: true,
-        validate : {
-            validator : Number.isInteger,
+        validate: {
+            validator: Number.isInteger,
         }
     },
     gender: {
@@ -37,4 +37,4 @@ module.exports = new Schema({
         enum: ['M', 'F', 'B'],
         required: true
     }
-},{ _id : false });
+}, {_id: false});

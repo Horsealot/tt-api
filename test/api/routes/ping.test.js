@@ -1,17 +1,18 @@
 //During the test the env variable is set to test
 process.env.NODE_ENV = 'test';
 
+require('module-alias/register');
 require('dotenv').config({path: '.env.test'});
-//Require the dev-dependencies
+
 let chai = require('chai');
 let expect = chai.expect;
 let chaiHttp = require('chai-http');
-let server = require('../../../server');
+let server = require('./../../../server');
 let should = chai.should();
 let sinon = require('sinon');
 let mongoose = require('mongoose');
 
-require('./../../../api/models');
+require('@models');
 const UserModel = mongoose.model('User');
 
 const Hydrator = require('./../../hydrators');
@@ -25,13 +26,17 @@ describe('Profile Route', () => {
         });
     });
 
+    afterEach(() => {
+        sinon.restore();
+    });
+
     /*
-    * Test the /GET users route
+    * Test the /POST ping route
     */
-    describe('GET /profile/nomenclature', () => {
+    describe('POST /ping', () => {
         it('should not accept an unauthenticated request', (done) => {
             chai.request(server)
-                .get('/api/profile/nomenclature')
+                .post('/api/ping')
                 .send()
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -41,17 +46,14 @@ describe('Profile Route', () => {
         it('should accept an authenticated request', (done) => {
             UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
                 chai.request(server)
-                    .get('/api/profile/nomenclature')
+                    .post('/api/ping')
                     .set('Authorization', 'Bearer ' + user.generateJWT())
-                    .send()
+                    .send({lat: 0, lng: 0})
                     .end((err, res) => {
                         res.should.have.status(200);
-                        res.should.be.json;
-                        res.body.should.be.a('object');
                         done();
                     });
             });
         });
     });
-
 });

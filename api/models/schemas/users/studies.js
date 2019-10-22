@@ -1,16 +1,13 @@
-const { Schema } = require('mongoose');
+const {Schema} = require('mongoose');
 
 module.exports = new Schema({
     title: {
-        type: String,
-        required: true
+        type: String
     },
     institution: {
-        type: String,
-        required: true
+        type: String
     },
     graduation_date: {
-        type: Date,
-        required: true
+        type: Date
     },
-},{ _id : false });
+}, {_id: false});

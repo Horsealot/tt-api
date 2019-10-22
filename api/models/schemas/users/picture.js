@@ -1,5 +1,4 @@
-const derivativeSchema = require('./pictureDerivative');
-const { Schema } = require('mongoose');
+const {Schema} = require('mongoose');
 
 module.exports = new Schema({
     created_at: {
@@ -9,11 +8,11 @@ module.exports = new Schema({
     source: {
         type: String
     },
-    order: {
-        type: Number,
-        validate : {
-            validator : Number.isInteger,
-        }
+    expired_at: {
+        type: Date,
+        default: Date.now
     },
-    derivatives: [derivativeSchema]
+    public_source: {
+        type: String
+    },
 });
