@@ -30,7 +30,7 @@ const auth = {
         const {payload: {id}} = req;
         return UsersModel.findOne({_id: id}).then((user) => {
             if (!user) {
-                res.sendStatus(400);
+                res.sendStatus(401);
             } else {
                 req.user = user;
                 next();
