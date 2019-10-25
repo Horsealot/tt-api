@@ -1,14 +1,4 @@
-const mongoose = require('mongoose');
-
-/**
- * Cast to objectId
- * @param id
- * @return {*}
- */
-const castToObjectId = (id) => {
-    if (typeof id === 'string') return mongoose.Types.ObjectId(id);
-    return id;
-};
+const caster = require('@api/utils/caster');
 
 /**
  * Filter my session by my gender preference
@@ -46,7 +36,7 @@ class Query {
                 'distanceField': "dist.calculated",
                 'maxDistance': this.user.filters.max_distance * 1000,
                 'query': {
-                    '_id': {"$nin": this.blacklist.map(castToObjectId)},
+                    '_id': {"$nin": this.blacklist.map(caster.toObjectId)},
                     ...getGenderFilter(this.user),
                     ...getGenderPreferenceFilter(this.user),
                 },

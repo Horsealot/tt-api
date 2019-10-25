@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node ./bin/www",
-    "test": "nyc mocha --exit --recursive --timeout 10000"
+    "test": "mocha --exit --recursive --timeout 10000",
+    "coverage": "nyc mocha --exit --recursive --timeout 10000"
   },
   "author": "",
   "license": "ISC",
@@ -43,7 +44,9 @@
   "_moduleAliases": {
     "@api": "api",
     "@models": "api/models",
-    "@logger": "api/utils/logger"
+    "@logger": "api/utils/logger",
+    "@emitter": "api/events/emitter",
+    "@events": "api/events/types"
   },
   "devDependencies": {
     "nyc": "^14.1.1"

@@ -1,5 +1,3 @@
-"use strict";
-
 const mongoose = require('mongoose');
 require('./../../api/models');
 const UserModel = mongoose.model('User');

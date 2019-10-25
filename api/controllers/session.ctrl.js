@@ -12,7 +12,6 @@ const self = {
             }
             res.json(userSuggestions);
         } catch (e) {
-            console.log(e);
             Logger.error(`session.ctrl.js\tGet suggestions error: {${e.message}}`);
             res.sendStatus(503);
         }

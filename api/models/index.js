@@ -1,5 +1,3 @@
-'use strict';
-
 const mongoose = require('mongoose');
 const Logger = require('@logger');
 
@@ -14,6 +12,7 @@ mongoose.connect(`mongodb://${host}:${port}/${dbName}`, {useNewUrlParser: true, 
 
 require('./schemas/user');
 require('./schemas/session');
+require('./schemas/blacklist');
 
 var db = mongoose.connection;
 db.on('error', () => {
