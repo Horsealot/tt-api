@@ -13,6 +13,7 @@ if (!dbName) throw new Error("Missing env variable DB_NAME");
 mongoose.connect(`mongodb://${host}:${port}/${dbName}`, {useNewUrlParser: true, useUnifiedTopology: true});
 
 require('./schemas/user');
+require('./schemas/session');
 
 var db = mongoose.connection;
 db.on('error', () => {

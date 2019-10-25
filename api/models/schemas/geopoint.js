@@ -10,5 +10,5 @@ module.exports = new Schema({
     coordinates: {
         type: [Number],
         required: true
-    }
+    },
 });

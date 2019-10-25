@@ -4,5 +4,8 @@ module.exports = new Schema({
     refreshed_at: {
         type: Date
     },
-    data: [Schema.Types.ObjectId]
+    data: {
+        type: [Schema.Types.ObjectId],
+        default: []
+    }
 }, {_id: false});

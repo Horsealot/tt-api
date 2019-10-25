@@ -14,9 +14,9 @@ class UserResponse {
         this.locale = user.locale;
         // TODO
         this.distance = -1;
-        this.pictures = user.pictures.map((picture) => new PictureResponse(picture));
-        this.studies = user.studies.length > 0 ? user.studies[0] : null;
-        this.jobs = user.jobs.length > 0 ? user.jobs[0] : null;
+        this.pictures = user.pictures ? user.pictures.map((picture) => new PictureResponse(picture)) : [];
+        this.studies = (user.studies && user.studies.length) > 0 ? user.studies[0] : null;
+        this.jobs = (user.jobs && user.jobs.length) > 0 ? user.jobs[0] : null;
         this.lairs = user.lairs;
         this.physical_activity = converter.getPhysicalActivity(user.physical_activity);
         this.astrological_sign = user.astrological_sign;

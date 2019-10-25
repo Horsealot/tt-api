@@ -42,11 +42,11 @@ const auth = {
     },
     isUserAllowed: (req, res, next) => {
         const {user} = req;
-        if(!user) {
+        if (!user) {
             Logger.error(`auth.js\tisUserAllowed must be used after loadUser`);
             return res.sendStatus(500);
         }
-        if(user.status.locked) {
+        if (user.status.locked) {
             Logger.info(`auth.js\tUser is not allowed to access this API`);
             return res.sendStatus(401);
         }

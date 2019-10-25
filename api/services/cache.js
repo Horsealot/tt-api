@@ -25,7 +25,7 @@ client.on("ready", function () {
     Logger.info(`CACHE\tRedis up and running`)
 });
 
-class CacheClient {
+class CacheService {
     static get(key) {
         return getAsync(key).then((data) => {
             return JSON.parse(data);
@@ -37,6 +37,6 @@ class CacheClient {
     }
 }
 
-module.exports = CacheClient;
+module.exports = CacheService;
 
 // redis-cli -h redis-16640.c15.us-east-1-4.ec2.cloud.redislabs.com -p 16640 -a password

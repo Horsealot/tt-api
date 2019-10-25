@@ -65,7 +65,10 @@ var UserSchema = new Schema({
         default: filtersSchema,
         required: true
     },
-    location: geopointSchema,
+    location: {
+        type: geopointSchema,
+        index: {type: '2dsphere', sparse: false},
+    },
     height: {
         type: Number,
         min: 0
@@ -205,14 +208,14 @@ UserSchema.methods.setFromFacebook = function (fbProfile) {
 };
 
 UserSchema.methods.validateProfile = function () {
-    if(!this.date_of_birth || !this.gender) {
+    if (!this.date_of_birth || !this.gender) {
         this.status.reasons.indexOf(statusReasonsConverter.PROFILE_INCOMPLETE) === -1 ?
             this.status.reasons.push(statusReasonsConverter.PROFILE_INCOMPLETE) :
             null;
     } else {
         this.status.reasons.filter((reason) => reason !== statusReasonsConverter.PROFILE_INCOMPLETE);
     }
-    if(this.date_of_birth && DateUtils.getUserAge(this.date_of_birth) < 18) {
+    if (this.date_of_birth && DateUtils.getUserAge(this.date_of_birth) < 18) {
         this.status.reasons.indexOf(statusReasonsConverter.USER_UNDERAGE) === -1 ?
             this.status.reasons.push(statusReasonsConverter.USER_UNDERAGE) :
             null;
