@@ -12,8 +12,9 @@ mongoose.connect(`mongodb://${host}:${port}/${dbName}`, {useNewUrlParser: true, 
 mongoose.set('useCreateIndex', true);
 
 require('./schemas/user');
-require('./schemas/session');
+require('./schemas/userSession');
 require('./schemas/blacklist');
+require('./schemas/session');
 
 var db = mongoose.connection;
 db.on('error', () => {

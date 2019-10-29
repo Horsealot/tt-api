@@ -2,7 +2,7 @@ const eventTypes = require('./../types');
 const Logger = require('@logger')('refreshSuggestion.listener.js');
 
 const mongoose = require('mongoose');
-const UserSessionModel = mongoose.model('Session');
+const UserSessionModel = mongoose.model('UserSession');
 const UserModel = mongoose.model('User');
 
 const suggestionEngine = require('@api/suggestions/engine');
@@ -17,14 +17,23 @@ module.exports = (emitter) => {
         if (!data.userId) {
             Logger.error(`${data.eventId}\tMissing userId`);
         }
+        if (!data.sessionId) {
+            Logger.error(`${data.eventId}\tMissing sessionId`);
+        }
         const user = await UserModel.findOne({_id: data.userId});
         if (!user) {
             Logger.error(`${data.eventId}\tUnknown user`);
         }
 
-        let userSession = await UserSessionModel.findOne({user_id: caster.toObjectId(data.userId)});
+        let userSession = await UserSessionModel.findOne({
+            user_id: caster.toObjectId(data.userId),
+            session_id: caster.toObjectId(data.sessionId)
+        });
         if (!userSession) {
-            userSession = new UserSessionModel({user_id: caster.toObjectId(data.userId)})
+            userSession = new UserSessionModel({
+                user_id: caster.toObjectId(data.userId),
+                session_id: caster.toObjectId(data.sessionId)
+            })
         }
         suggestionEngine.refreshSuggestions(user, userSession);
         await userSession.save();

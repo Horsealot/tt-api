@@ -8,8 +8,7 @@ require('dotenv').config({path: '.env.test'});
 const chai = require('chai');
 const sinon = require('sinon');
 const mongoose = require('mongoose');
-const UserModel = mongoose.model('User');
-const UserSessionModel = mongoose.model('Session');
+const UserSessionModel = mongoose.model('UserSession');
 const expect = chai.expect;
 
 const SessionsCache = require('@api/caches/sessions.cache');
@@ -30,11 +29,11 @@ describe('Engine service', () => {
             Hydrators.init().then((user) => {
                 const getCachedSession = sinon.stub(SessionsCache, 'get').resolves(null);
                 const setSessionInCache = sinon.stub(SessionsCache, 'set').resolves(null);
-                const sessionModelCache = sinon.stub(UserSessionModel, 'findOne').resolves(null);
-                EngineService.getUserSuggestions(user).then((suggestions) => {
+                const sessionModelStub = sinon.stub(UserSessionModel, 'findOne').resolves(null);
+                EngineService.getUserSuggestions(user, '5db85f92593f1f155df4cec5').then((suggestions) => {
                     expect(getCachedSession.calledOnce).to.be.true;
                     expect(setSessionInCache.calledOnce).to.be.true;
-                    expect(sessionModelCache.calledOnce).to.be.true;
+                    expect(sessionModelStub.calledOnce).to.be.true;
                     done();
                 });
             });
@@ -43,11 +42,11 @@ describe('Engine service', () => {
             Hydrators.init().then((user) => {
                 const getCachedSession = sinon.stub(SessionsCache, 'get').resolves([user.id]);
                 const setSessionInCache = sinon.stub(SessionsCache, 'set').resolves(null);
-                const sessionModelCache = sinon.stub(UserSessionModel, 'findOne').resolves(null);
-                EngineService.getUserSuggestions(user).then((suggestions) => {
+                const sessionModelStub = sinon.stub(UserSessionModel, 'findOne').resolves(null);
+                EngineService.getUserSuggestions(user, '5db85f92593f1f155df4cec5').then((suggestions) => {
                     expect(getCachedSession.calledOnce).to.be.true;
                     expect(setSessionInCache.calledOnce).to.be.false;
-                    expect(sessionModelCache.calledOnce).to.be.false;
+                    expect(sessionModelStub.calledOnce).to.be.false;
                     done();
                 });
             });

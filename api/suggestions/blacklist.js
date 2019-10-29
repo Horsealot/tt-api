@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UserSessionModel = mongoose.model('Session');
+const UserSessionModel = mongoose.model('UserSession');
 const UserBlacklistModel = mongoose.model('Blacklist');
 
 const self = {

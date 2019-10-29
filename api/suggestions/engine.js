@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UserSessionModel = mongoose.model('Session');
+const UserSessionModel = mongoose.model('UserSession');
 const UserModel = mongoose.model('User');
 const QueryFilter = require('./query');
 const SessionsCache = require('@api/caches/sessions.cache');
@@ -44,16 +44,16 @@ const getBlackList = async (user, session) => {
 };
 
 const self = {
-    getUserSuggestions: async (user) => {
+    getUserSuggestions: async (user, sessionId) => {
         const cachedSuggestions = await SessionsCache.get(user.id);
         if (cachedSuggestions) {
             Logger.debug(`Returned cached suggestions {${user.id}}`);
             return await loadUsers(cachedSuggestions);
         }
 
-        let session = await UserSessionModel.findOne({user_id: user.id});
+        let session = await UserSessionModel.findOne({user_id: user.id, session_id: sessionId});
         if (!session) {
-            session = new UserSessionModel({user_id: user.id});
+            session = new UserSessionModel({user_id: user.id, session_id: sessionId});
         }
 
         let suggestedUsers;

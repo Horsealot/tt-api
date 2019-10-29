@@ -10,7 +10,7 @@ const sinon = require('sinon');
 const mongoose = require('mongoose');
 const expect = chai.expect;
 const {AuthError} = require('@api/errors');
-const UserSessionModel = mongoose.model('Session');
+const UserSessionModel = mongoose.model('UserSession');
 const caster = require('@api/utils/caster');
 
 const SuggestionsRemover = require('@api/suggestions/remover');

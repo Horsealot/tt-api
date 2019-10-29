@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UserSessionModel = mongoose.model('Session');
+const UserSessionModel = mongoose.model('UserSession');
 const UserBlacklistModel = mongoose.model('Blacklist');
 
 const Logger = require('@logger')('user.ctrl.js');
@@ -12,9 +12,11 @@ module.exports = {
     sendMacaroon: async (req, res) => {
         const {payload: {id: loggedUserId}} = req;
         const {params: {userId: invitedUserId}} = req;
+        const {sessionId} = req;
         try {
             let userSession = await UserSessionModel.findOne({
                 user_id: loggedUserId,
+                session_id: sessionId,
                 'suggestions.data': invitedUserId
             });
             if (!userSession) return res.sendStatus(403);
@@ -33,10 +35,12 @@ module.exports = {
     skipSuggestion: async (req, res) => {
         const {payload: {id: loggedUserId}} = req;
         const {params: {userId: invitedUserId}} = req;
+        const {sessionId} = req;
         try {
             let userSession = await UserSessionModel.findOne({
                 user_id: loggedUserId,
-                'suggestions.data': invitedUserId
+                'suggestions.data': invitedUserId,
+                session_id: sessionId,
             });
             if (!userSession) return res.sendStatus(403);
             let userBlacklist = await UserBlacklistModel.findOne({user_id: loggedUserId});
@@ -47,6 +51,7 @@ module.exports = {
             userBlacklist.addUser(invitedUserId);
             userSession.skipped++;
             await userBlacklist.save();
+            await userSession.save();
             EventEmitter.emit(eventTypes.SUGGESTION_SKIPPED, {from: loggedUserId, to: invitedUserId});
             res.sendStatus(200);
         } catch (e) {
