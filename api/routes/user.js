@@ -5,4 +5,5 @@ const UserController = require('@api/controllers/user.ctrl');
 
 module.exports = (router) => {
     router.post('/users/:userId/invite', auth.required, sessionManager.isInSession, UserController.sendMacaroon);
+    router.post('/users/:userId/skip', auth.required, sessionManager.isInSession, UserController.skipSuggestion);
 };

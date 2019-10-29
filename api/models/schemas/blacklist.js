@@ -11,10 +11,11 @@ const BlacklistSchema = new Schema({
     data: [blockedSchema]
 });
 
-BlacklistSchema.methods.addUser = function (user_id) {
+BlacklistSchema.methods.addUser = function (user_id, status) {
     if (!this.data.find((user) => user.user_id.toString() === user_id.toString())) {
         this.data.push({
-            user_id
+            user_id,
+            status
         });
     }
 };

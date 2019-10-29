@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const UserSessionModel = mongoose.model('Session');
-const UserBlacklistModel = mongoose.model('Blacklist');
 const UserModel = mongoose.model('User');
 const QueryFilter = require('./query');
 const SessionsCache = require('@api/caches/sessions.cache');
 const ProfileLoader = require('@api/loaders/profile');
 const UserResponse = require('@api/models/responses/user.response');
 const Logger = require('@logger');
+const blacklistGenerator = require('./blacklist');
 
 const loadUsers = (userIds) => {
     let users = [];
@@ -26,22 +26,20 @@ const areSuggestionsExpired = (session) => {
 };
 
 const getBlackList = async (user, session) => {
-    let fullBlacklist = [];
     // TODO Add active conversations
+    // And handle exceptions
 
-    // We blacklist refused and blocked users
-    const userBlockedBlacklist = await UserBlacklistModel.findOne({user_id: user._id});
-    if (userBlockedBlacklist) {
-        fullBlacklist = [...fullBlacklist, userBlockedBlacklist.data.map((blockedUser) => blockedUser.user_id)]
-    }
-    // We blacklist user who already sent a macaroon (Should we filter by status ?)
-    const userWhoAlreadySentAMacaroon = await UserSessionModel.find({'macaroons.user_id': user._id}, 'user_id');
+    const userAlreadyLinked = await blacklistGenerator.getUserAlreadyLinked(user._id);
+    const userBlacklist = await blacklistGenerator.getUserBlacklist(user._id);
+    const userWhoBlacklisted = await blacklistGenerator.getUserWhoBlacklisted(user._id);
+
     return [
         user._id,
         // And we remove the people we already sent a macaroon to
         ...session.macaroons.map((sent) => sent.user_id),
-        ...userWhoAlreadySentAMacaroon.map((macaroon) => macaroon.user_id),
-        ...fullBlacklist
+        ...userAlreadyLinked,
+        ...userBlacklist,
+        ...userWhoBlacklisted,
     ];
 };
 
