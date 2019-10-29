@@ -1,4 +1,4 @@
-const Logger = require('@api/utils/logger');
+const Logger = require('@logger')('spotify.js');
 const rp = require('request-promise');
 
 const host = process.env.TT_SPOTIFY_HOST;
@@ -21,7 +21,7 @@ module.exports = {
                 return parsedBody;
             })
             .catch(function (err) {
-                Logger.error(`spotify.js\tError while requesting link user {${err.status}%${err.message}}`);
+                Logger.error(`Error while requesting link user {${err.status}%${err.message}}`);
                 throw err;
             });
     },
@@ -37,7 +37,7 @@ module.exports = {
                 return parsedBody;
             })
             .catch(function (err) {
-                Logger.error(`spotify.js\tError while requesting de-link user {${err.status}%${err.message}}`);
+                Logger.error(`Error while requesting de-link user {${err.status}%${err.message}}`);
                 throw err;
             });
     },
