@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Logger = require('@logger');
+const Logger = require('@logger')('DB');
 
 const host = process.env.DB_HOST;
 const port = process.env.DB_PORT;
@@ -9,6 +9,7 @@ if (!port) throw new Error("Missing env variable DB_PORT");
 if (!dbName) throw new Error("Missing env variable DB_NAME");
 
 mongoose.connect(`mongodb://${host}:${port}/${dbName}`, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.set('useCreateIndex', true);
 
 require('./schemas/user');
 require('./schemas/session');
@@ -16,9 +17,9 @@ require('./schemas/blacklist');
 
 var db = mongoose.connection;
 db.on('error', () => {
-    Logger.error(`DB\tDatabase connection error`);
-    console.error.bind(console, 'DB\tconnection error:')
+    Logger.error(`Database connection error`);
+    console.error.bind(console, 'Connection error:')
 });
 db.once('open', function () {
-    Logger.info(`DB\tDatabase MongoDb connected`);
+    Logger.info(`Database MongoDb connected`);
 });

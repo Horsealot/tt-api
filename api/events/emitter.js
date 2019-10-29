@@ -1,7 +1,12 @@
 const EventEmitter = require('events').EventEmitter;
+const uniqid = require('uniqid');
 
 class TrikTrakEmitter extends EventEmitter {
     // Override to log events
+    emit = (event, data) => {
+        data.eventId = uniqid();
+        super.emit(event, data);
+    }
 }
 
 const emitter = new TrikTrakEmitter();

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const UserSessionModel = mongoose.model('Session');
 const SessionsCache = require('@api/caches/sessions.cache');
-const Logger = require('@logger');
+const Logger = require('@logger')('remover.js');
 
 
 const self = {
@@ -27,7 +27,7 @@ const self = {
         session.rmSuggestion(userIdToRemove);
         await session.save();
         await SessionsCache.set(session.user_id, session.getSuggestions());
-        Logger.debug(`remover.js\t{${session.user_id}}'s suggestions cleaned from user {${userIdToRemove}}`);
+        Logger.debug(`{${session.user_id}}'s suggestions cleaned from user {${userIdToRemove}}`);
     },
 };
 

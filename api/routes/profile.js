@@ -1,7 +1,7 @@
 const auth = require('@api/utils/auth');
 const validator = require('@api/utils/validator');
 
-const Logger = require('@logger');
+const Logger = require('@logger')('profile.js');
 
 const filtersValidator = require('@models/validators/users/filters.validator');
 const picturePositionValidator = require('@models/validators/users/picturePosition.validator');
@@ -31,7 +31,7 @@ module.exports = (router) => {
     router.post('/profile/upload', auth.required, auth.loadUser, validator(picturePositionValidator, 'query'), userPictureUploader.single('picture'), (req, res) => {
         uploaderMiddleware(req, res, async function (err) {
             if (err) {
-                Logger.error(`profile.js\tError while uploading user picture {${err}}`);
+                Logger.error(`Error while uploading user picture {${err}}`);
                 return res.status(503).send({error: err.message});
             }
             const user = await ProfileController.uploadPicture(req.user, req.file.key, req.query.position);

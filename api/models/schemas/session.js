@@ -23,6 +23,22 @@ const SessionSchema = new Schema({
     macaroonsReceived: {
         type: Number,
         default: 0
+    },
+    macaroonsSent: {
+        type: Number,
+        default: 0
+    },
+    macaroonsRefused: {
+        type: Number,
+        default: 0
+    },
+    skipped: {
+        type: Number,
+        default: 0
+    },
+    messagesSent: {
+        type: Number,
+        default: 0
     }
 });
 

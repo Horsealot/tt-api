@@ -5,7 +5,7 @@ const QueryFilter = require('./query');
 const SessionsCache = require('@api/caches/sessions.cache');
 const ProfileLoader = require('@api/loaders/profile');
 const UserResponse = require('@api/models/responses/user.response');
-const Logger = require('@logger');
+const Logger = require('@logger')('engine.js');
 const blacklistGenerator = require('./blacklist');
 
 const loadUsers = (userIds) => {
@@ -47,7 +47,7 @@ const self = {
     getUserSuggestions: async (user) => {
         const cachedSuggestions = await SessionsCache.get(user.id);
         if (cachedSuggestions) {
-            Logger.debug(`engine.js\tReturned cached suggestions {${user.id}}`);
+            Logger.debug(`Returned cached suggestions {${user.id}}`);
             return await loadUsers(cachedSuggestions);
         }
 
@@ -65,7 +65,7 @@ const self = {
         }
         await session.save();
         await SessionsCache.set(user.id, session.getSuggestions());
-        Logger.debug(`engine.js\tCached suggestions {${user.id}}`);
+        Logger.debug(`Cached suggestions {${user.id}}`);
         return suggestedUsers;
     },
     refreshSuggestions: async (user, session) => {

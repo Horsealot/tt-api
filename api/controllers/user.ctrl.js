@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const UserSessionModel = mongoose.model('Session');
 const UserBlacklistModel = mongoose.model('Blacklist');
 
-const Logger = require('@logger');
+const Logger = require('@logger')('user.ctrl.js');
 const EventEmitter = require('@emitter');
 const eventTypes = require('@events');
 
@@ -19,13 +19,14 @@ module.exports = {
             });
             if (!userSession) return res.sendStatus(403);
             userSession.addMacaroon(invitedUserId);
+            userSession.macaroonsSent++;
             await userSession.save();
             EventEmitter.emit(eventTypes.MACAROON_SENT, {from: loggedUserId, to: invitedUserId});
             res.sendStatus(200);
         } catch (e) {
             console.log(e);
-            Logger.error(`user.ctrl.js\tSend maracoon error: {${e.message}}`);
-            Logger.debug(`user.ctrl.js\tSend maracoon error: {${JSON.stringify(e)}}`);
+            Logger.error(`Send maracoon error: {${e.message}}`);
+            Logger.debug(`Send maracoon error: {${JSON.stringify(e)}}`);
             res.sendStatus(503);
         }
     },
@@ -44,12 +45,13 @@ module.exports = {
                 status: blacklistStatus.SKIPPED
             });
             userBlacklist.addUser(invitedUserId);
+            userSession.skipped++;
             await userBlacklist.save();
             EventEmitter.emit(eventTypes.SUGGESTION_SKIPPED, {from: loggedUserId, to: invitedUserId});
             res.sendStatus(200);
         } catch (e) {
-            Logger.error(`user.ctrl.js\tSuggestion skip error: {${e.message}}`);
-            Logger.debug(`user.ctrl.js\tSuggestion skip error: {${JSON.stringify(e)}}`);
+            Logger.error(`Suggestion skip error: {${e.message}}`);
+            Logger.debug(`Suggestion skip error: {${JSON.stringify(e)}}`);
             res.sendStatus(503);
         }
     },

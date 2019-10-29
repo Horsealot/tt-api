@@ -1,7 +1,7 @@
 const jwt = require('express-jwt');
 const mongoose = require('mongoose');
 const UsersModel = mongoose.model('User');
-const Logger = require('@logger');
+const Logger = require('@logger')('auth.js');
 const TokenUtils = require('./token');
 
 const getTokenFromHeaders = (req) => {
@@ -36,18 +36,18 @@ const auth = {
                 next();
             }
         }).catch((err) => {
-            Logger.error(`auth.js\tLoad user failed: ${err.message}`);
+            Logger.error(`Load user failed: ${err.message}`);
             res.sendStatus(400);
         });
     },
     isUserAllowed: (req, res, next) => {
         const {user} = req;
         if (!user) {
-            Logger.error(`auth.js\tisUserAllowed must be used after loadUser`);
+            Logger.error(`isUserAllowed must be used after loadUser`);
             return res.sendStatus(500);
         }
         if (user.status.locked) {
-            Logger.info(`auth.js\tUser is not allowed to access this API`);
+            Logger.info(`User is not allowed to access this API`);
             return res.sendStatus(401);
         }
         next();
