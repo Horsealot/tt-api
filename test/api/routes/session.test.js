@@ -68,19 +68,4 @@ describe('Session Route', () => {
             });
         });
     });
-
-    /*
-    * Test the /GET session route
-    */
-    describe('GET /session', () => {
-        it('should not accept an unauthenticated request', (done) => {
-            chai.request(server)
-                .get('/api/session')
-                .send()
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
-                });
-        });
-    });
 });

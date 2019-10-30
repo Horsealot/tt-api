@@ -3,6 +3,6 @@ const SessionController = require('@api/controllers/session.ctrl');
 const sessionManager = require('@api/middlewares/session.middleware');
 
 module.exports = (router) => {
-    router.get('/session', auth.required, auth.loadUser, SessionController.getSessionStatus);
+    router.get('/session', SessionController.getSessionStatus);
     router.get('/session/suggestions', auth.required, auth.loadUser, sessionManager.isInSession, SessionController.getSuggestions);
 };
