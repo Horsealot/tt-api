@@ -4,6 +4,7 @@ const spotify = require('./spotify');
 const ping = require('./ping');
 const session = require('./session');
 const user = require('./user');
+const global = require('./global');
 
 module.exports = (router) => {
     profile(router);
@@ -11,5 +12,6 @@ module.exports = (router) => {
     spotify(router);
     ping(router);
     session(router);
+    global(router);
     user(router);
 };

@@ -20,10 +20,9 @@ module.exports = {
                 'suggestions.data': invitedUserId
             });
             if (!userSession) return res.sendStatus(403);
-            userSession.addMacaroon(invitedUserId);
             userSession.macaroonsSent++;
             await userSession.save();
-            EventEmitter.emit(eventTypes.MACAROON_SENT, {from: loggedUserId, to: invitedUserId});
+            EventEmitter.emit(eventTypes.MACAROON_SENT, {from: loggedUserId, to: invitedUserId, sessionId});
             res.sendStatus(200);
         } catch (e) {
             console.log(e);

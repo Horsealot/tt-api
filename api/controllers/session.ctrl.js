@@ -7,7 +7,7 @@ const SessionResponse = require('@models/responses/session.response');
 const self = {
     getSessionStatus: async (req, res) => {
         try {
-            const nextSession = await SessionModel.findOne({end_at: {'$gte': new Date()}}, null, {sort: {end_at: 1}});
+            const nextSession = await SessionModel.findCurrentDisplayed();
             if (!nextSession) {
                 return res.sendStatus(450);
             }

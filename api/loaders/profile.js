@@ -20,6 +20,16 @@ const self = {
         await UserCache.set(user.id, userResponse);
         return userResponse;
     },
+    getList: (userIds) => {
+        let users = [];
+        return Promise.all(userIds.map((userId) => {
+            return new Promise((resolve) => {
+                self.get(userId).then((user) => {
+                    users.push(user);
+                }).catch().finally(() => resolve());
+            });
+        })).then(() => users);
+    }
 };
 
 module.exports = self;

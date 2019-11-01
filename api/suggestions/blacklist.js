@@ -14,8 +14,8 @@ const self = {
         const userWhoBlockedBlacklist = await UserBlacklistModel.find({'data.user_id': userId});
         return userWhoBlockedBlacklist.map((userBlacklist) => userBlacklist.user_id);
     },
-    getUserAlreadyLinked: async (userId) => {
-        // We blacklist user who already sent a macaroon (Should we filter by status ?)
+    getUserAlreadyInvited: async (userId) => {
+        // We blacklist user we already invited (Should we filter by status ?)
         return (await UserSessionModel.find({'macaroons.user_id': userId}, 'user_id')).map((macaroon) => macaroon.user_id);
     }
 };

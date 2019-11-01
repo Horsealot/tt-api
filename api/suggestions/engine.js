@@ -29,15 +29,15 @@ const getBlackList = async (user, session) => {
     // TODO Add active conversations
     // And handle exceptions
 
-    const userAlreadyLinked = await blacklistGenerator.getUserAlreadyLinked(user._id);
+    const userAlreadyInvited = await blacklistGenerator.getUserAlreadyInvited(user._id);
     const userBlacklist = await blacklistGenerator.getUserBlacklist(user._id);
     const userWhoBlacklisted = await blacklistGenerator.getUserWhoBlacklisted(user._id);
 
     return [
         user._id,
-        // And we remove the people we already sent a macaroon to
+        // We remove the people who already sent us a macaroon
         ...session.macaroons.map((sent) => sent.user_id),
-        ...userAlreadyLinked,
+        ...userAlreadyInvited,
         ...userBlacklist,
         ...userWhoBlacklisted,
     ];
