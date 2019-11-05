@@ -7,6 +7,7 @@ const EventEmitter = require('@emitter');
 const eventTypes = require('@events');
 
 const blacklistStatus = require('@api/models/schemas/session/blockedStatus');
+const macaroonStatus = require('@api/models/schemas/session/macaroonStatus');
 
 module.exports = {
     sendMacaroon: async (req, res) => {
@@ -31,6 +32,33 @@ module.exports = {
             res.sendStatus(503);
         }
     },
+    refuseMacaroon: async (req, res) => {
+        const {payload: {id: loggedUserId}} = req;
+        const {params: {userId: userInvitingId}} = req;
+        const {sessionId} = req;
+        try {
+            let userSession = await UserSessionModel.findOne({
+                user_id: loggedUserId,
+                session_id: sessionId,
+                macaroons: {
+                    '$elemMatch': {
+                        'user_id': userInvitingId,
+                        'status': macaroonStatus.NEW,
+                    }
+                }
+            });
+            if (!userSession) return res.sendStatus(403);
+            userSession.macaroonsRefused++;
+            await userSession.save();
+            EventEmitter.emit(eventTypes.MACAROON_REFUSED, {from: loggedUserId, to: userInvitingId, sessionId});
+            res.sendStatus(200);
+        } catch (e) {
+            console.log(e);
+            Logger.error(`Refuse maracoon error: {${e.message}}`);
+            Logger.debug(`Refuse maracoon error: {${JSON.stringify(e)}}`);
+            res.sendStatus(503);
+        }
+    },
     skipSuggestion: async (req, res) => {
         const {payload: {id: loggedUserId}} = req;
         const {params: {userId: invitedUserId}} = req;
@@ -44,10 +72,9 @@ module.exports = {
             if (!userSession) return res.sendStatus(403);
             let userBlacklist = await UserBlacklistModel.findOne({user_id: loggedUserId});
             if (!userBlacklist) userBlacklist = new UserBlacklistModel({
-                user_id: loggedUserId,
-                status: blacklistStatus.SKIPPED
+                user_id: loggedUserId
             });
-            userBlacklist.addUser(invitedUserId);
+            userBlacklist.addUser(invitedUserId, blacklistStatus.SKIPPED);
             userSession.skipped++;
             await userBlacklist.save();
             await userSession.save();

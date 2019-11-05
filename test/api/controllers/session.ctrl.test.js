@@ -40,10 +40,10 @@ describe('Session Controller', () => {
             });
         });
         it('should return the session', (done) => {
-            const sessionStub = sinon.stub(SessionModel, 'findOne').resolves({
+            const sessionStub = sinon.stub(SessionModel, 'findOne').resolves(new SessionModel({
                 start_at: new Date(),
                 end_at: new Date(),
-            });
+            }));
             UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
                 chai.request(server)
                     .get('/api/session')

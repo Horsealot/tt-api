@@ -12,6 +12,7 @@ class TrikTrakEmitter extends EventEmitter {
 const emitter = new TrikTrakEmitter();
 
 require('./listeners/newMacaroon.listener')(emitter);
+require('./listeners/macaroonRefused.listener')(emitter);
 require('./listeners/refreshSuggestion.listener')(emitter);
 require('./listeners/suggestionSkipped.listener')(emitter);
 

@@ -61,6 +61,21 @@ describe('User Route', () => {
     });
 
     /*
+    * Test the /DELETE user invite route
+    */
+    describe('DELETE /users/:userid/invite', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .delete('/api/users/5db6f9ffaea41bc6791aebd6/invite')
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+    });
+
+    /*
     * Test the /POST skip user route
     */
     describe('POST /users/:userid/skip', () => {
