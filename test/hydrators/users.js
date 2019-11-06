@@ -89,5 +89,8 @@ module.exports = {
             });
             return userActive3.save();
         });
+    },
+    clean: () => {
+        return UserModel.deleteMany({})
     }
 };

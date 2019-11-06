@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const UserBlacklistModel = mongoose.model('Blacklist');
-const Logger = require('@logger')('remover.js');
+const Logger = require('@logger')('addUserToBlacklist.bv.js');
 
 const self = {
     addToUserBlacklist: async (loggedUserId, userIdToAdd, status) => {

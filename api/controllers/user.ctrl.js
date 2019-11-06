@@ -53,7 +53,32 @@ module.exports = {
             EventEmitter.emit(eventTypes.MACAROON_REFUSED, {from: loggedUserId, to: userInvitingId, sessionId});
             res.sendStatus(200);
         } catch (e) {
-            console.log(e);
+            Logger.error(`Refuse maracoon error: {${e.message}}`);
+            Logger.debug(`Refuse maracoon error: {${JSON.stringify(e)}}`);
+            res.sendStatus(503);
+        }
+    },
+    acceptMacaroon: async (req, res) => {
+        const {payload: {id: loggedUserId}} = req;
+        const {params: {userId: userInvitingId}} = req;
+        const {sessionId} = req;
+        try {
+            let userSession = await UserSessionModel.findOne({
+                user_id: loggedUserId,
+                session_id: sessionId,
+                macaroons: {
+                    '$elemMatch': {
+                        'user_id': userInvitingId,
+                        'status': macaroonStatus.NEW,
+                    }
+                }
+            });
+            if (!userSession) return res.sendStatus(403);
+            userSession.macaroonsAccepted++;
+            await userSession.save();
+            EventEmitter.emit(eventTypes.MACAROON_ACCEPTED, {from: loggedUserId, to: userInvitingId, sessionId});
+            res.sendStatus(200);
+        } catch (e) {
             Logger.error(`Refuse maracoon error: {${e.message}}`);
             Logger.debug(`Refuse maracoon error: {${JSON.stringify(e)}}`);
             res.sendStatus(503);

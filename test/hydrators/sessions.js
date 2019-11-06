@@ -35,5 +35,8 @@ module.exports = {
             });
             return activeSession.save();
         });
+    },
+    clean: () => {
+        return SessionModel.deleteMany({})
     }
 };

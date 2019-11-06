@@ -1,8 +1,8 @@
 const eventTypes = require('./../types');
-const refuseMacaroon = require('@api/behaviors/refuseMacaroon.bv');
-const Logger = require('@logger')('macaroonRefused.listener.js');
+const acceptMacaroon = require('@api/behaviors/acceptMacaroon.bv');
+const Logger = require('@logger')('macaroonAccepted.listener.js');
 
-const EVENT_LISTENED = eventTypes.MACAROON_REFUSED;
+const EVENT_LISTENED = eventTypes.MACAROON_ACCEPTED;
 
 module.exports = (emitter) => {
     emitter.on(EVENT_LISTENED, async (data) => {
@@ -16,7 +16,7 @@ module.exports = (emitter) => {
         if (!data.sessionId) {
             Logger.error(`${data.eventId}\tMissing sessionId data`);
         }
-        await refuseMacaroon.refuseForUserId(data.sessionId, data.from, data.to);
+        await acceptMacaroon.acceptForUserId(data.sessionId, data.from, data.to);
         Logger.debug(`${data.eventId}\tEvent processed {${EVENT_LISTENED}}`);
     });
 };

@@ -42,31 +42,15 @@ describe('User Route', () => {
                 });
         });
         // TODO
-        // it('should accept an authenticated request', (done) => {
-        //     const isInSessionStub = sinon.stub(sessionManager, 'isInSession').callsFake((req, res, next) => {
-        //         next()
-        //     });
-        //     UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
-        //         chai.request(server)
-        //             .post('/api/users/5db6f9ffaea41bc6791aebd6/invite')
-        //             .set('Authorization', 'Bearer ' + user.generateJWT())
-        //             .send({lat: 0, lng: 0})
-        //             .end((err, res) => {
-        //                 // res.should.have.status(200);
-        //                 expect(isInSessionStub.calledOnce).to.be.true;
-        //                 done();
-        //             });
-        //     });
-        // });
     });
 
     /*
     * Test the /DELETE user invite route
     */
-    describe('DELETE /users/:userid/invite', () => {
+    describe('DELETE /users/:userid/macaroon', () => {
         it('should not accept an unauthenticated request', (done) => {
             chai.request(server)
-                .delete('/api/users/5db6f9ffaea41bc6791aebd6/invite')
+                .delete('/api/users/5db6f9ffaea41bc6791aebd6/macaroon')
                 .send()
                 .end((err, res) => {
                     res.should.have.status(401);

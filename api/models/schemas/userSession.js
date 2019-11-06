@@ -6,8 +6,6 @@ const suggestionSchema = require('./session/suggestions');
 const macaroonsSchema = require('./session/macaroons');
 const caster = require('@api/utils/caster');
 
-const macaroonStatus = require('./session/macaroonStatus');
-
 /* 1 HOUR */
 const EXPIRATION_LIMIT = 60 * 60 * 1000;
 
@@ -72,10 +70,10 @@ UserSessionSchema.methods.rmSuggestion = function (user_id) {
     this.suggestions.data = this.suggestions.data.filter((suggestionId) => caster.toString(suggestionId) !== caster.toString(user_id));
 };
 
-UserSessionSchema.methods.refuseMacaroon = function (user_id) {
+UserSessionSchema.methods.updateMacaroonStatus = function (user_id, status) {
     for (let i = 0; i < this.macaroons.length; i++) {
         if (caster.toString(this.macaroons[i].user_id) === caster.toString(user_id)) {
-            this.macaroons[i].status = macaroonStatus.REFUSED;
+            this.macaroons[i].status = status;
             this.macaroons[i].answered_at = new Date();
         }
     }

@@ -15,6 +15,7 @@ require('./schemas/user');
 require('./schemas/userSession');
 require('./schemas/blacklist');
 require('./schemas/session');
+require('./schemas/connection');
 
 var db = mongoose.connection;
 db.on('error', () => {

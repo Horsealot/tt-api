@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const UserSessionModel = mongoose.model('UserSession');
-const Logger = require('@logger')('remover.js');
+const Logger = require('@logger')('refuseMacaroon.bv.js');
 const addUserToBlacklistBehavior = require('@api/behaviors/addUserToBlacklist.bv');
 const blacklistStatus = require('@models/schemas/session/blockedStatus');
+const macaroonStatus = require('@models/schemas/session/macaroonStatus');
 
 const self = {
     /**
@@ -25,7 +26,7 @@ const self = {
     refuseForSession: async (session, userIdToRemove) => {
         if (!session || !session.macaroons || !session.macaroons.length) return;
 
-        session.refuseMacaroon(userIdToRemove);
+        session.updateMacaroonStatus(userIdToRemove, macaroonStatus.REFUSED);
         await session.save();
         await addUserToBlacklistBehavior.addToUserBlacklist(session.user_id, userIdToRemove, blacklistStatus.REFUSED);
         Logger.debug(`{${session.user_id}} refused {${userIdToRemove}} macaroon`);

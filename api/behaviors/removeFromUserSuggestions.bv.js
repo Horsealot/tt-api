@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const UserSessionModel = mongoose.model('UserSession');
 const SessionsCache = require('@api/caches/sessions.cache');
-const Logger = require('@logger')('remover.js');
+const Logger = require('@logger')('removeFromUserSuggestions.bv.js');
 
 const self = {
     /**
