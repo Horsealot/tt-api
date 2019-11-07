@@ -10,12 +10,15 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
 const sinon = require('sinon');
-const server = require('./../../../server');
 
 require('@models');
 
 const SessionModel = mongoose.model('Session');
 const UserModel = mongoose.model('User');
+
+const getUserPreviousSelectionCompletedBehavior = require('@api/behaviors/getUserPreviousSelectionCompleted.bv');
+
+const server = require('./../../../server');
 
 //Our parent block
 describe('Session Controller', () => {
@@ -44,6 +47,7 @@ describe('Session Controller', () => {
                 start_at: new Date(),
                 end_at: new Date(),
             }));
+            sinon.stub(getUserPreviousSelectionCompletedBehavior, 'get').resolves(true);
             UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
                 chai.request(server)
                     .get('/api/session')

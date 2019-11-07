@@ -6,16 +6,18 @@ const UserSessionModel = mongoose.model('UserSession');
 const SessionResponse = require('@models/responses/session.response');
 const getUserSelectionBehavior = require('@api/behaviors/getUserSelection.bv');
 const organizeUserSelectionBehavior = require('@api/behaviors/organizeUserSelection.bv');
+const getUserPreviousSelectionCompletedBehavior = require('@api/behaviors/getUserPreviousSelectionCompleted.bv');
 
 const self = {
     getSessionStatus: async (req, res) => {
+        const {payload: {id: userId = null} = {}} = req;
         try {
             const nextSession = await SessionModel.findCurrentDisplayed();
             if (!nextSession) {
                 return res.sendStatus(450);
             }
-            // TODO previous_selection_completed
-            res.json(new SessionResponse(nextSession, false));
+            const previousSelectionCompleted = userId ? await getUserPreviousSelectionCompletedBehavior.get(nextSession, userId) : true;
+            res.json(new SessionResponse(nextSession, previousSelectionCompleted));
         } catch (e) {
             Logger.error(`Get session status error: {${e.message}}`);
             res.sendStatus(503);
