@@ -30,7 +30,7 @@ const self = {
         const dateOfInvite = correspondingMacaroons.length ? correspondingMacaroons[0].sent_at : new Date();
 
         await session.save();
-        await createConnectionBehavior.create(userIdToAccept, session.user_id, dateOfInvite);
+        await createConnectionBehavior.create(session.id, userIdToAccept, session.user_id, dateOfInvite);
         Logger.debug(`{${session.user_id}} accepted {${userIdToAccept}}'s macaroon`);
     },
 };

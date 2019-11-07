@@ -2,7 +2,10 @@ const Logger = require('@logger')('session.ctrl.js');
 const SuggestionEngine = require('@api/suggestions/engine');
 const mongoose = require('mongoose');
 const SessionModel = mongoose.model('Session');
+const UserSessionModel = mongoose.model('UserSession');
 const SessionResponse = require('@models/responses/session.response');
+const getUserSelectionBehavior = require('@api/behaviors/getUserSelection.bv');
+const organizeUserSelectionBehavior = require('@api/behaviors/organizeUserSelection.bv');
 
 const self = {
     getSessionStatus: async (req, res) => {
@@ -15,6 +18,33 @@ const self = {
             res.json(new SessionResponse(nextSession, false));
         } catch (e) {
             Logger.error(`Get session status error: {${e.message}}`);
+            res.sendStatus(503);
+        }
+    },
+    getAvailableFavorites: async (req, res) => {
+        const {payload: {id: userId}} = req;
+        try {
+            const session = await SessionModel.findSessionForSelection();
+            if (!session) {
+                return res.sendStatus(450);
+            }
+            const userSession = await UserSessionModel.findOne({user_id: userId, session_id: session.id});
+            if (!userSession) {
+                Logger.debug(`User {${userId}} requested his available favorites but didn't participate in session {${session.id}}`);
+                return res.json([]);
+            }
+            if (userSession.favoritePicked) {
+                return res.sendStatus(403);
+            }
+            const selections = await getUserSelectionBehavior.get(userId, session._id);
+            const organizedSelections = organizeUserSelectionBehavior.organizeByRounds(selections);
+
+            res.json({
+                number_of_rounds: organizedSelections.length,
+                selections: organizedSelections
+            });
+        } catch (e) {
+            Logger.error(`Get available favorites error: {${e.message}}`);
             res.sendStatus(503);
         }
     },

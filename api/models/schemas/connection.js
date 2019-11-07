@@ -7,6 +7,10 @@ const messageSchema = require('./connections/messageBaseObject');
 
 const ConnectionSchema = new Schema({
     members: [Schema.Types.ObjectId],
+    session_id: {
+        type: Schema.Types.ObjectId,
+        required: true
+    },
     last_active_at: {type: Date, default: Date.now},
     created_at: {type: Date, default: Date.now},
     status: {

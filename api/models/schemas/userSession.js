@@ -46,6 +46,10 @@ const UserSessionSchema = new Schema({
     messagesSent: {
         type: Number,
         default: 0
+    },
+    favoritePicked: {
+        type: Boolean,
+        default: false
     }
 });
 
