@@ -39,6 +39,10 @@ const UserSessionSchema = new Schema({
         type: Number,
         default: 0
     },
+    nbOfFavorites: {
+        type: Number,
+        default: 0
+    },
     skipped: {
         type: Number,
         default: 0

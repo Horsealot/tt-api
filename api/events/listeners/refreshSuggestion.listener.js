@@ -2,18 +2,16 @@ const eventTypes = require('./../types');
 const Logger = require('@logger')('refreshSuggestion.listener.js');
 
 const mongoose = require('mongoose');
-const UserSessionModel = mongoose.model('UserSession');
 const UserModel = mongoose.model('User');
 
-const suggestionEngine = require('@api/suggestions/engine');
-const caster = require('@api/utils/caster');
+const handler = require('./../handlers/refreshSuggestion.handler');
 
-const SessionsCache = require('@api/caches/sessions.cache');
+const EVENT_LISTENED = eventTypes.REFRESH_SUGGESTIONS;
 
 module.exports = (emitter) => {
-    emitter.on(eventTypes.REFRESH_SUGGESTIONS, async (data) => {
+    emitter.on(EVENT_LISTENED, async (data) => {
         // Replace by queueing system
-        Logger.debug(`${data.eventId}\tNew event {${eventTypes.REFRESH_SUGGESTIONS}}`);
+        Logger.debug(`${data.eventId}\tNew event {${EVENT_LISTENED}}`);
         if (!data.userId) {
             Logger.error(`${data.eventId}\tMissing userId`);
         }
@@ -24,20 +22,13 @@ module.exports = (emitter) => {
         if (!user) {
             Logger.error(`${data.eventId}\tUnknown user`);
         }
-
-        let userSession = await UserSessionModel.findOne({
-            user_id: caster.toObjectId(data.userId),
-            session_id: caster.toObjectId(data.sessionId)
-        });
-        if (!userSession) {
-            userSession = new UserSessionModel({
-                user_id: caster.toObjectId(data.userId),
-                session_id: caster.toObjectId(data.sessionId)
-            })
+        try {
+            await handler.handle(data.sessionId, user);
+            Logger.debug(`${data.eventId}\tEvent processed {${EVENT_LISTENED}}`);
+        } catch (e) {
+            Logger.error(`${data.eventId}\tError while processing event {${EVENT_LISTENED}}`);
+            // TODO Log event somewhere to reprocess it
         }
-        suggestionEngine.refreshSuggestions(user, userSession);
-        await userSession.save();
-        await SessionsCache.set(user.id, userSession.getSuggestions());
-        Logger.debug(`${data.eventId}\tEvent processed {${eventTypes.REFRESH_SUGGESTIONS}}`);
+        Logger.debug(`${data.eventId}\tEvent processed {${EVENT_LISTENED}}`);
     });
 };

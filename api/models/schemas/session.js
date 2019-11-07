@@ -27,7 +27,7 @@ SessionSchema.statics.findCurrentDisplayed = async function () {
 };
 
 SessionSchema.statics.findSessionForSelection = async function () {
-    return await this.findOne({end_at: {'$lte': new Date()}}, null, {sort: {end_at: -1}});
+    return await this.findOne({start_at: {'$lte': new Date()}}, null, {sort: {start_at: -1}});
 };
 
 module.exports = mongoose.model('Session', SessionSchema);
