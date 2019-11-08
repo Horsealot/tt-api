@@ -47,7 +47,7 @@ describe('Get user previous selection completed behavior', () => {
     it('should true if the user already picked his favorite', (done) => {
         const stubbedSession = {isActive: () => false};
         const getLastSessionStub = sinon.stub(SessionModel, 'findSessionForSelection').resolves({id: 'fakeSessionId'});
-        const getUserSessionStub = sinon.stub(UserSessionModel, 'findOne').resolves({favoritePicked: true});
+        const getUserSessionStub = sinon.stub(UserSessionModel, 'findOne').resolves({favorite_picked: 1});
         getUserPreviousSelectionCompletedBehavior.get(stubbedSession, USER_ID).then((previousSelectionCompleted) => {
             expect(previousSelectionCompleted).to.be.true;
             expect(getLastSessionStub.calledOnce).to.be.true;
@@ -59,7 +59,7 @@ describe('Get user previous selection completed behavior', () => {
     it('should true if the user did pick his previous favorite yet', (done) => {
         const stubbedSession = {isActive: () => false};
         const getLastSessionStub = sinon.stub(SessionModel, 'findSessionForSelection').resolves({id: 'fakeSessionId'});
-        const getUserSessionStub = sinon.stub(UserSessionModel, 'findOne').resolves({favoritePicked: false});
+        const getUserSessionStub = sinon.stub(UserSessionModel, 'findOne').resolves({favorite_picked: 0});
         getUserPreviousSelectionCompletedBehavior.get(stubbedSession, USER_ID).then((previousSelectionCompleted) => {
             expect(previousSelectionCompleted).to.be.false;
             expect(getLastSessionStub.calledOnce).to.be.true;

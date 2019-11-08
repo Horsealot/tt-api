@@ -152,7 +152,12 @@ var UserSchema = new Schema({
     },
     duplicate_of: {
         type: Schema.Types.ObjectId
-    }
+    },
+    extra_selections: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
 });
 
 UserSchema.pre('save', function (next) {

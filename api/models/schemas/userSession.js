@@ -39,10 +39,6 @@ const UserSessionSchema = new Schema({
         type: Number,
         default: 0
     },
-    nbOfFavorites: {
-        type: Number,
-        default: 0
-    },
     skipped: {
         type: Number,
         default: 0
@@ -51,9 +47,15 @@ const UserSessionSchema = new Schema({
         type: Number,
         default: 0
     },
-    favoritePicked: {
-        type: Boolean,
-        default: false
+    favorite_picked: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    extra_selections: {
+        type: Number,
+        default: 0,
+        min: 0
     }
 });
 

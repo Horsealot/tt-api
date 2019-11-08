@@ -37,32 +37,39 @@ const self = {
             const userSession = await UserSessionModel.findOne({user_id: userId, session_id: session.id});
             if (!userSession) {
                 Logger.debug(`User {${userId}} requested his available favorites but didn't participate in session {${session.id}}`);
-                return res.json([]);
+                return res.json({
+                    remaining_selections: 0,
+                    number_of_rounds: 0,
+                    selections: []
+                });
             }
-            if (userSession.favoritePicked) {
-                return res.sendStatus(403);
-            }
-            const selections = await getUserSelectionBehavior.get(userId, session._id);
+            const selections = await getUserSelectionBehavior.get(req.user, userSession);
             const organizedSelections = organizeUserSelectionBehavior.organizeByRounds(selections);
 
             res.json({
+                remaining_selections: req.user.extra_selections + userSession.extra_selections + (userSession.favorite_picked === 0 ? 1 : 0),
                 number_of_rounds: organizedSelections.length,
                 selections: organizedSelections
             });
         } catch (e) {
-            Logger.error(`Get available favorites error: {${e.message}}`);
-            res.sendStatus(503);
+            if (e instanceof UnauthorizedError) {
+                Logger.debug(`Get available favorites unauthorized access: {${e.message} / ${JSON.stringify(e.data)}}`);
+                res.sendStatus(403);
+            } else {
+                Logger.error(`Get available favorites error: {${e.message}}`);
+                res.sendStatus(503);
+            }
         }
     },
     pickFavorite: async (req, res) => {
-        const {payload: {id: userId}} = req;
+        const {user} = req;
         const {params: {userId: pickedUserId}} = req;
         try {
             const session = await SessionModel.findSessionForSelection();
             if (!session) {
                 return res.sendStatus(450);
             }
-            await pickUserSelectionBehavior.pick(session, userId, pickedUserId);
+            await pickUserSelectionBehavior.pick(session, user, pickedUserId);
 
             res.sendStatus(200);
         } catch (e) {

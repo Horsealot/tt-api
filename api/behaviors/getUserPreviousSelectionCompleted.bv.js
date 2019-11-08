@@ -15,7 +15,7 @@ const self = {
         const lastSession = await SessionModel.findSessionForSelection();
         if (lastSession) {
             const lastUserSession = await UserSessionModel.findOne({user_id: userId, session_id: lastSession.id});
-            if (lastUserSession) return lastUserSession.favoritePicked;
+            if (lastUserSession) return lastUserSession.favorite_picked > 0;
         }
         return true;
     },

@@ -68,4 +68,38 @@ describe('Session Route', () => {
             });
         });
     });
+    describe('GET /session/favorites', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .get('/api/session/favorites')
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+    });
+    describe('POST /session/favorites', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .post('/api/session/favorites/5db2a7c2593f1f155df4c715')
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+        it('should return 422 on a bad request', (done) => {
+            UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
+                chai.request(server)
+                    .post('/api/session/favorites/5db2a7c2593f1f')
+                    .set('Authorization', 'Bearer ' + user.generateJWT())
+                    .send()
+                    .end((err, res) => {
+                        res.should.have.status(422);
+                        done();
+                    });
+            });
+        });
+    });
 });
