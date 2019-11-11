@@ -21,8 +21,6 @@ module.exports = {
                 'suggestions.data': invitedUserId
             });
             if (!userSession) return res.sendStatus(403);
-            userSession.macaroonsSent++;
-            await userSession.save();
             EventEmitter.emit(eventTypes.MACAROON_SENT, {from: loggedUserId, to: invitedUserId, sessionId});
             res.sendStatus(200);
         } catch (e) {
@@ -48,7 +46,7 @@ module.exports = {
                 }
             });
             if (!userSession) return res.sendStatus(403);
-            userSession.macaroonsRefused++;
+            userSession.macaroons_refused++;
             await userSession.save();
             EventEmitter.emit(eventTypes.MACAROON_REFUSED, {from: loggedUserId, to: userInvitingId, sessionId});
             res.sendStatus(200);
@@ -74,7 +72,7 @@ module.exports = {
                 }
             });
             if (!userSession) return res.sendStatus(403);
-            userSession.macaroonsAccepted++;
+            userSession.macaroons_accepted++;
             await userSession.save();
             EventEmitter.emit(eventTypes.MACAROON_ACCEPTED, {from: loggedUserId, to: userInvitingId, sessionId});
             res.sendStatus(200);

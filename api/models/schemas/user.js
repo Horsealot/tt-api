@@ -15,6 +15,7 @@ const statusSchema = require('./users/status');
 const studiesSchema = require('./users/studies');
 const filtersSchema = require('./users/filters');
 const spotifySchema = require('./users/spotify');
+const gamingSchema = require('./users/gaming');
 const notificationsSchema = require('./users/notifications');
 const validationStatusSchema = require('./users/validation');
 
@@ -139,6 +140,11 @@ var UserSchema = new Schema({
     },
     spotify: {
         type: spotifySchema
+    },
+    gaming: {
+        type: gamingSchema,
+        default: gamingSchema,
+        required: true
     },
     notifications: {
         type: notificationsSchema,

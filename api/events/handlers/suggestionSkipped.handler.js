@@ -1,8 +1,8 @@
 const suggestionsRemover = require('@api/suggestions/remover');
 
 module.exports = {
-    handle: (from, to) => {
-        suggestionsRemover.removeFromUserSuggestions(from, to);
-        suggestionsRemover.removeFromUserSuggestions(to, from);
+    handle: async (from, to) => {
+        await suggestionsRemover.removeFromUserSuggestions(from, to);
+        await suggestionsRemover.removeFromUserSuggestions(to, from);
     }
 };

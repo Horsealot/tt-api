@@ -23,19 +23,19 @@ const UserSessionSchema = new Schema({
         default: suggestionSchema,
     },
     macaroons: [macaroonsSchema],
-    macaroonsReceived: {
+    macaroons_received: {
         type: Number,
         default: 0
     },
-    macaroonsSent: {
+    macaroons_sent: {
         type: Number,
         default: 0
     },
-    macaroonsRefused: {
+    macaroons_refused: {
         type: Number,
         default: 0
     },
-    macaroonsAccepted: {
+    macaroons_accepted: {
         type: Number,
         default: 0
     },
@@ -43,7 +43,7 @@ const UserSessionSchema = new Schema({
         type: Number,
         default: 0
     },
-    messagesSent: {
+    messages_sent: {
         type: Number,
         default: 0
     },

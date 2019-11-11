@@ -4,7 +4,7 @@ const handler = require('./../handlers/suggestionSkipped.handler');
 const EVENT_LISTENED = eventTypes.SUGGESTION_SKIPPED;
 
 module.exports = (emitter) => {
-    emitter.on(EVENT_LISTENED, (data) => {
+    emitter.on(EVENT_LISTENED, async (data) => {
         Logger.debug(`${data.eventId}\tNew event {${EVENT_LISTENED}}`);
         if (!data.from) {
             Logger.error(`${data.eventId}\tMissing from data`);
@@ -13,7 +13,7 @@ module.exports = (emitter) => {
             Logger.error(`${data.eventId}\tMissing to data`);
         }
         try {
-            handler.handle(data.from, data.to);
+            await handler.handle(data.from, data.to);
             Logger.debug(`${data.eventId}\tEvent processed {${EVENT_LISTENED}}`);
         } catch (e) {
             Logger.error(`${data.eventId}\tError while processing event {${EVENT_LISTENED}}`);
