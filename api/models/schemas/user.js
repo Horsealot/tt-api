@@ -43,7 +43,6 @@ var UserSchema = new Schema({
     lastname: String,
     phone: {
         type: Number,
-        unique: true,
         index: true
     },
     email: {
