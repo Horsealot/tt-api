@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const UserModel = mongoose.model('User');
-const Logger = require('@logger');
+const Logger = require('@logger')('auth.ctrl.js');
 
 const passport = require('passport');
 
@@ -66,10 +66,10 @@ const self = {
             var user = await UserModel.findOne({phone});
             if (!user) {
                 user = new UserModel({phone});
-                Logger.debug(`auth.ctrl.js\t User {${phone}} created`);
+                Logger.debug(`User {${phone}} created`);
             }
             user.last_login = new Date();
-            Logger.debug(`auth.ctrl.js\t User {${phone}} updated`);
+            Logger.debug(`User {${phone}} updated`);
             return await user.save();
         } catch (e) {
             Logger.error(e);
@@ -79,7 +79,7 @@ const self = {
     requestAuthCode: async (phone) => {
         try {
             const requestId = await NexmoService.requestAuthCode(phone);
-            Logger.debug(`auth.ctrl.js\tAuth code requested {${phone}}`);
+            Logger.debug(`Auth code requested {${phone}}`);
             return requestId;
         } catch (e) {
             Logger.error(e);
@@ -89,7 +89,7 @@ const self = {
     authByPhoneCode: async (requestId, code) => {
         try {
             const userPhone = await NexmoService.authenticate(requestId, code);
-            Logger.debug(`auth.ctrl.js\t New Phone authentication {${userPhone}}`);
+            Logger.debug(`New Phone authentication {${userPhone}}`);
             return await self.loginOrSignupByPhone(userPhone);
         } catch (e) {
             Logger.error(e);

@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
 const {AuthError} = require('@api/errors');
-const Logger = require('@api/utils/logger');
+const Logger = require('@logger')('firebase.js');
 
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 if (!adminConfig) throw new Error("Missing env variable FIREBASE_CONFIG");
@@ -14,16 +14,16 @@ admin.initializeApp({
 const self = {
     getUserPhone: async (uid, token) => {
         try {
-            Logger.debug(`firebase.js\tStart get user phone`);
+            Logger.debug(`Start get user phone`);
             const firebaseUser = await admin.auth().getUser(uid);
             const decodedIdToken = await admin.auth().verifyIdToken(token);
             if (decodedIdToken.uid !== uid) {
-                Logger.error(`firebase.js\tUnauthorized access, could be an attempt to steal an account. Sender firebase uid : {${decodedIdToken.uid}}`);
+                Logger.error(`Unauthorized access, could be an attempt to steal an account. Sender firebase uid : {${decodedIdToken.uid}}`);
                 throw new AuthError({message: 'Unauthorized access'});
             }
             return firebaseUser.phoneNumber;
         } catch (err) {
-            Logger.error(`firebase.js\tError while getting user phone {${err.message}}`);
+            Logger.error(`Error while getting user phone {${err.message}}`);
             throw new AuthError(err.message);
         }
     }

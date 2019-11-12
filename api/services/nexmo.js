@@ -1,5 +1,5 @@
 const {AuthError} = require('@api/errors');
-const Logger = require('@api/utils/logger');
+const Logger = require('@logger')('nexmo.js');
 
 const Nexmo = require('nexmo');
 
@@ -15,7 +15,7 @@ const nexmo = new Nexmo({
 
 const requestAuthCode = (phone) => {
     return new Promise((resolve, reject) => {
-        Logger.debug(`nexmo.js\tRequest auth code {${phone}}`);
+        Logger.debug(`Request auth code {${phone}}`);
         nexmo.verify.request({number: phone, brand: 'TrikTrak'}, (err, result) => {
             if (err) return reject(err);
             if (result.status !== '0') {
@@ -27,7 +27,7 @@ const requestAuthCode = (phone) => {
 };
 
 const authenticate = (requestId, code) => {
-    Logger.debug(`nexmo.js\tAuthenticate by phone {${requestId},${code}}`);
+    Logger.debug(`Authenticate by phone {${requestId},${code}}`);
     return new Promise((resolve, reject) => {
         // First we must retrieve the number by searching for the request
         // Search cannot be done after the check because the request disappear after the check

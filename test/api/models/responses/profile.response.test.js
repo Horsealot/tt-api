@@ -63,6 +63,7 @@ describe('Profile Response', () => {
             expect(profile).to.have.property('lairs');
             expect(profile).to.have.property('tracks');
             expect(profile).to.have.property('artists');
+            expect(profile).to.have.property('gaming');
             done();
         });
     });

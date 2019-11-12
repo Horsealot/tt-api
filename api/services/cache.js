@@ -1,5 +1,5 @@
 const redis = require("redis");
-const Logger = require('@logger');
+const Logger = require('@logger')('CACHE');
 
 const host = process.env.REDIS_HOST;
 const port = process.env.REDIS_PORT;
@@ -19,13 +19,13 @@ const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
 
 client.on("error", function (err) {
-    Logger.error(`CACHE\tRedis unreachable {${err}}`)
+    Logger.error(`Redis unreachable {${err}}`)
 });
 client.on("ready", function () {
-    Logger.info(`CACHE\tRedis up and running`)
+    Logger.info(`Redis up and running`)
 });
 
-class CacheClient {
+class CacheService {
     static get(key) {
         return getAsync(key).then((data) => {
             return JSON.parse(data);
@@ -37,6 +37,6 @@ class CacheClient {
     }
 }
 
-module.exports = CacheClient;
+module.exports = CacheService;
 
 // redis-cli -h redis-16640.c15.us-east-1-4.ec2.cloud.redislabs.com -p 16640 -a password

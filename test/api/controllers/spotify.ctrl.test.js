@@ -129,10 +129,10 @@ describe('Spotify Controller', () => {
             }).then((user) => {
                 expect(delinkUserStub.calledOnce).to.be.true;
                 expect(user.spotify).to.be.null;
-                UserModel.findOne({email: 'john.doe@dummy.com'}, (err, dbUser) => {
-                    expect(dbUser.spotify).to.be.null;
-                    done();
-                });
+                return UserModel.findOne({email: 'john.doe@dummy.com'});
+            }).then((dbUser) => {
+                expect(dbUser.spotify).to.be.null;
+                done();
             });
         });
     });
