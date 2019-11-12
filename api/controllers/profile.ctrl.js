@@ -1,7 +1,7 @@
 const converter = require('@models/converters');
 
 const {refreshUserPublicPictures} = require('@api/services/userPicture');
-const Logger = require('@logger');
+const Logger = require('@logger')('profile.ctrl.js');
 const UserResponse = require('@models/responses/user.response');
 const ProfileResponse = require('@models/responses/profile.response');
 const LairService = require('@api/services/lairs');
@@ -23,10 +23,10 @@ module.exports = {
         user.notifications = req.body;
         try {
             await user.save();
-            Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his notications`);
+            Logger.debug(`User ${user._id} updated his notications`);
             res.send(new ProfileResponse(user));
         } catch (e) {
-            Logger.error(`profile.ctrl.js\tputNotifications: {${e.message}}`);
+            Logger.error(`putNotifications: {${e.message}}`);
             res.sendStatus(503);
         }
     },
@@ -35,10 +35,10 @@ module.exports = {
         try {
             user.lairs = await LairService.postUserLairs(user, req.body);
             await user.save();
-            Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his lairs`);
+            Logger.debug(`User ${user._id} updated his lairs`);
             res.send(new ProfileResponse(user));
         } catch (e) {
-            Logger.error(`profile.ctrl.js\tputLairs: {${e.message}}`);
+            Logger.error(`putLairs: {${e.message}}`);
             res.sendStatus(503);
         }
     },
@@ -50,19 +50,19 @@ module.exports = {
         user.validateProfile();
         try {
             await user.save();
-            Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his profile details`);
+            Logger.debug(`User ${user._id} updated his profile details`);
             await UserCache.set(user.id, new UserResponse(user));
             res.send(new ProfileResponse(user));
         } catch (e) {
-            Logger.error(`profile.ctrl.js\tputLairs: {${e.message}}`);
+            Logger.error(`putLairs: {${e.message}}`);
             res.sendStatus(503);
         }
     },
     uploadValidationPicture: async (req, res) => {
-        Logger.debug(`profile.ctrl.js\tUser ${req.user._id} uploaded a validation picture`);
+        Logger.debug(`User ${req.user._id} uploaded a validation picture`);
         uploaderValidationMiddleware(req, res, async function (err) {
             if (err) {
-                Logger.error(`profile.js\tError while uploading user validation picture {${err}}`);
+                Logger.error(`Error while uploading user validation picture {${err}}`);
                 return res.status(503).send({error: err.message});
             }
             req.user.validation = {
@@ -76,7 +76,7 @@ module.exports = {
         });
     },
     uploadPicture: async (user, picturePath, position) => {
-        Logger.debug(`profile.ctrl.js\tUser ${user._id} uploaded a picture`);
+        Logger.debug(`User ${user._id} uploaded a picture`);
         const uploadedPicture = {
             created_at: new Date(),
             source: picturePath
@@ -100,7 +100,7 @@ module.exports = {
             return true;
         });
         if (removed.length) {
-            Logger.debug(`profile.ctrl.js\tUser {${user.id}} removed ${removed.length} pictures > {${removed}}`);
+            Logger.debug(`User {${user.id}} removed ${removed.length} pictures > {${removed}}`);
         }
         let userPictures = [];
         // Reorder remaining pictures
@@ -115,17 +115,17 @@ module.exports = {
         return user.save();
     },
     updateUserFilters: async (user, filters) => {
-        Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his filters`);
+        Logger.debug(`User ${user._id} updated his filters`);
         user.filters = filters;
         return await user.save();
     },
     updateUserJobs: async (user, jobs) => {
-        Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his jobs`);
+        Logger.debug(`User ${user._id} updated his jobs`);
         user.jobs = jobs;
         return await user.save();
     },
     updateUserStudies: async (user, studies) => {
-        Logger.debug(`profile.ctrl.js\tUser ${user._id} updated his studies`);
+        Logger.debug(`User ${user._id} updated his studies`);
         user.studies = studies;
         return await user.save();
     },
@@ -134,23 +134,23 @@ module.exports = {
     },
     reactivateProfile: async (req, res) => {
         try {
-            Logger.debug(`profile.ctrl.js\tUser ${req.user._id} reactivated his account`);
+            Logger.debug(`User ${req.user._id} reactivated his account`);
             req.user.active = true;
             await req.user.save();
             res.send(new ProfileResponse(req.user));
         } catch (e) {
-            Logger.error(`profile.ctrl.js\treactivateProfile: {${e.message}}`);
+            Logger.error(`reactivateProfile: {${e.message}}`);
             res.sendStatus(503);
         }
     },
     deactivateProfile: async (req, res) => {
         try {
-            Logger.debug(`profile.ctrl.js\tUser ${req.user._id} reactivated his account`);
+            Logger.debug(`User ${req.user._id} reactivated his account`);
             req.user.active = false;
             await req.user.save();
             res.send(new ProfileResponse(req.user));
         } catch (e) {
-            Logger.error(`profile.ctrl.js\treactivateProfile: {${e.message}}`);
+            Logger.error(`reactivateProfile: {${e.message}}`);
             res.sendStatus(503);
         }
     }

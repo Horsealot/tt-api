@@ -15,6 +15,7 @@ const statusSchema = require('./users/status');
 const studiesSchema = require('./users/studies');
 const filtersSchema = require('./users/filters');
 const spotifySchema = require('./users/spotify');
+const gamingSchema = require('./users/gaming');
 const notificationsSchema = require('./users/notifications');
 const validationStatusSchema = require('./users/validation');
 
@@ -40,10 +41,14 @@ var UserSchema = new Schema({
     },
     firstname: String,
     lastname: String,
-    phone: Number,
+    phone: {
+        type: Number,
+        index: true
+    },
     email: {
         type: String, trim: true,
         unique: true, sparse: true,
+        index: true,
         match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
     },
     hash: String,
@@ -51,7 +56,11 @@ var UserSchema = new Schema({
     bio: String,
     facebookProvider: {
         type: {
-            id: String,
+            id: {
+                type: String,
+                unique: true,
+                index: true
+            },
             token: String
         },
         select: false
@@ -65,7 +74,10 @@ var UserSchema = new Schema({
         default: filtersSchema,
         required: true
     },
-    location: geopointSchema,
+    location: {
+        type: geopointSchema,
+        index: {type: '2dsphere', sparse: false},
+    },
     height: {
         type: Number,
         min: 0
@@ -137,6 +149,11 @@ var UserSchema = new Schema({
     spotify: {
         type: spotifySchema
     },
+    gaming: {
+        type: gamingSchema,
+        default: gamingSchema,
+        required: true
+    },
     notifications: {
         type: notificationsSchema,
         default: notificationsSchema,
@@ -149,7 +166,12 @@ var UserSchema = new Schema({
     },
     duplicate_of: {
         type: Schema.Types.ObjectId
-    }
+    },
+    extra_selections: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
 });
 
 UserSchema.pre('save', function (next) {
@@ -205,14 +227,14 @@ UserSchema.methods.setFromFacebook = function (fbProfile) {
 };
 
 UserSchema.methods.validateProfile = function () {
-    if(!this.date_of_birth || !this.gender) {
+    if (!this.date_of_birth || !this.gender) {
         this.status.reasons.indexOf(statusReasonsConverter.PROFILE_INCOMPLETE) === -1 ?
             this.status.reasons.push(statusReasonsConverter.PROFILE_INCOMPLETE) :
             null;
     } else {
         this.status.reasons.filter((reason) => reason !== statusReasonsConverter.PROFILE_INCOMPLETE);
     }
-    if(this.date_of_birth && DateUtils.getUserAge(this.date_of_birth) < 18) {
+    if (this.date_of_birth && DateUtils.getUserAge(this.date_of_birth) < 18) {
         this.status.reasons.indexOf(statusReasonsConverter.USER_UNDERAGE) === -1 ?
             this.status.reasons.push(statusReasonsConverter.USER_UNDERAGE) :
             null;

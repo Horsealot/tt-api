@@ -16,7 +16,7 @@ require('module-alias/register');
 require('./api/models');
 
 const routes = require('./api/routes');
-const logger = require('./api/utils/logger');
+const logger = require('./api/utils/logger')('SERVER');
 require('./api/services/cache');
 
 // Load locales
@@ -47,6 +47,6 @@ app.use(passport.initialize());
 routes(router);
 app.use('/api', router);
 
-logger.info(`SERVER\tRunning on port ${PORT}`);
+logger.info(`Running on port ${PORT}`);
 module.exports = app;
 // module.exports = app.listen(PORT);

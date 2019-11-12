@@ -1,4 +1,4 @@
-const Logger = require('@api/utils/logger');
+const Logger = require('@logger')('lairs.js');
 const rp = require('request-promise');
 
 const host = process.env.TT_LAIRS_HOST;
@@ -24,7 +24,7 @@ module.exports = {
         try {
             return await rp.post(options);
         } catch (err) {
-            Logger.error(`lairs.js\tError while requesting post user {${err.status}%${err.message}}`);
+            Logger.error(`Error while requesting post user {${err.status}%${err.message}}`);
             throw err;
         }
     },
@@ -40,7 +40,7 @@ module.exports = {
         try {
             return await rp.get(options);
         } catch (err) {
-            Logger.error(`lairs.js\tError while requesting get user {${err.status}%${err.message}}`);
+            Logger.error(`Error while requesting get user {${err.status}%${err.message}}`);
             throw err;
         }
     },

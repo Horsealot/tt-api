@@ -10,6 +10,13 @@ class CustomError extends Error {
     }
 }
 
+class UnauthorizedError extends CustomError {
+    constructor(reason) {
+        super(`Unauthorized`);
+        this.data = {reason};
+    }
+}
+
 class AuthError extends CustomError {
     constructor(reason) {
         super(`Authentication failed`);
@@ -19,4 +26,5 @@ class AuthError extends CustomError {
 
 module.exports = {
     AuthError,
+    UnauthorizedError
 };
