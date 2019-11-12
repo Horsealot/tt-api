@@ -41,10 +41,15 @@ var UserSchema = new Schema({
     },
     firstname: String,
     lastname: String,
-    phone: Number,
+    phone: {
+        type: Number,
+        unique: true,
+        index: true
+    },
     email: {
         type: String, trim: true,
         unique: true, sparse: true,
+        index: true,
         match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
     },
     hash: String,
@@ -52,7 +57,11 @@ var UserSchema = new Schema({
     bio: String,
     facebookProvider: {
         type: {
-            id: String,
+            id: {
+                type: String,
+                unique: true,
+                index: true
+            },
             token: String
         },
         select: false

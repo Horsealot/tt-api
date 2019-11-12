@@ -6,7 +6,8 @@ const blockedSchema = require('./session/blocked');
 const BlacklistSchema = new Schema({
     user_id: {
         type: Schema.Types.ObjectId,
-        unique: true
+        unique: true,
+        index: true
     },
     data: [blockedSchema]
 });

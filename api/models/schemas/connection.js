@@ -25,6 +25,8 @@ const ConnectionSchema = new Schema({
     messages: [messageSchema]
 });
 
+ConnectionSchema.index({"members": 1}, {unique: true});
+
 /**
  * Add history
  * @param event
