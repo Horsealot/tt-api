@@ -1,38 +1,33 @@
 const mongoose = require('mongoose');
-const UserSessionModel = mongoose.model('UserSession');
 const SessionModel = mongoose.model('Session');
-const macaroonStatus = require('@models/schemas/session/macaroonStatus');
-const profileLoader = require('@api/loaders/profile');
+const getUserActiveConnectionsBehavior = require('@api/behaviors/getUserActiveConnections.bv');
+const getUserActiveInvitesBehavior = require('@api/behaviors/getUserActiveInvites.bv');
+const ConnectionResponse = require('@models/responses/connection.response');
 
 const self = {
     getUserUpdates: async (req, res) => {
         const {query: {last_update_date = null}} = req;
         let userUpdates = {
-            favorites: [],
+            conversations: [],
             expired: [],
             invites: [],
             announcements: [],
         };
         const nextOrCurrentSession = await SessionModel.findCurrentDisplayed();
 
-        Promise.all([
+        await Promise.all([
             new Promise(async (resolve) => {
-                if (!nextOrCurrentSession.isActive()) return resolve();
-                const userSession = await UserSessionModel.findOne({
-                    user_id: req.user._id,
-                    session_id: nextOrCurrentSession._id
-                });
-                if (!userSession) return resolve();
-                const invitedUserIds = userSession.macaroons
-                    .filter((macaroon) => macaroon.status === macaroonStatus.NEW &&
-                        (last_update_date === null || macaroon.sent_at >= new Date(last_update_date)))
-                    .map((macaroon) => macaroon.user_id);
-                userUpdates.invites = await profileLoader.getList(invitedUserIds);
+                userUpdates.invites = await getUserActiveInvitesBehavior.get(nextOrCurrentSession, req.user, last_update_date);
+                resolve();
+            }),
+            new Promise(async (resolve) => {
+                userUpdates.conversations = (await getUserActiveConnectionsBehavior.get(req.user, last_update_date))
+                    .map((connection) => new ConnectionResponse(connection, req.user));
                 resolve();
             })
-        ]).then(() => {
-            res.json(userUpdates);
-        });
+        ]);
+
+        res.json(userUpdates);
     },
 };
 

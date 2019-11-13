@@ -24,7 +24,8 @@ const ConnectionSchema = new Schema({
         type: Number,
         default: 0
     },
-    messages: [messageSchema]
+    messages: [messageSchema],
+    readers: {type: Object, default: {}},
 });
 
 ConnectionSchema.index({"members": 1}, {unique: true});
@@ -51,7 +52,21 @@ ConnectionSchema.methods.addHistory = function (event, by, at, payload) {
  */
 ConnectionSchema.methods.addMessage = function (message) {
     this.messages.push(message);
+    this.last_active_at = new Date();
+    this.nb_of_messages++;
     if (this.messages.length > MESSAGES_LIMIT) this.messages.shift();
+};
+
+/**
+ * Mark conversation as read by userId
+ * @param userId
+ */
+ConnectionSchema.methods.readBy = function (userId) {
+    if (!this.messages.length) return;
+    this.readers[userId] = {
+        last_read: this.messages[this.messages.length - 1].id,
+        at: new Date()
+    };
 };
 
 module.exports = mongoose.model('Connection', ConnectionSchema);
