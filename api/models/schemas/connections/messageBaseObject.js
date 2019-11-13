@@ -1,15 +1,14 @@
 const {Schema} = require('mongoose');
 
-module.exports = new Schema({
-    connection_id: {
-        type: Schema.Types.ObjectId,
-        required: true
-    },
+module.exports = {
     sent_at: {type: Date, default: Date.now},
     content: {type: Object},
-    sender: {
-        type: Schema.Types.ObjectId,
+    type: {
+        type: Number,
         required: true
+    },
+    sender: {
+        type: Schema.Types.ObjectId
     },
     readers: [{
         user_id: {
@@ -18,4 +17,4 @@ module.exports = new Schema({
         },
         at: {type: Date, default: Date.now},
     }]
-});
+};

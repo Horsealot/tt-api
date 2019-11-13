@@ -5,6 +5,8 @@ const connectionStatus = require('./../types/connectionStatus');
 const historySchema = require('./connections/history');
 const messageSchema = require('./connections/messageBaseObject');
 
+const MESSAGES_LIMIT = 200;
+
 const ConnectionSchema = new Schema({
     members: [Schema.Types.ObjectId],
     session_id: {
@@ -41,6 +43,15 @@ ConnectionSchema.methods.addHistory = function (event, by, at, payload) {
         by,
         payload
     });
+};
+
+/**
+ * Add a message to the connection
+ * @param message
+ */
+ConnectionSchema.methods.addMessage = function (message) {
+    this.messages.push(message);
+    if (this.messages.length > MESSAGES_LIMIT) this.messages.shift();
 };
 
 module.exports = mongoose.model('Connection', ConnectionSchema);

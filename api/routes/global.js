@@ -4,5 +4,5 @@ const updatesValidator = require('@models/validators/updates.validator');
 const validator = require('@api/utils/validator');
 
 module.exports = (router) => {
-    router.get('/updates', auth.required, auth.loadUser, validator(updatesValidator, 'query'), GlobalController.getUserUpdates);
+    router.get('/updates', auth.required, auth.loadUser, GlobalController.getUserUpdates);
 };
