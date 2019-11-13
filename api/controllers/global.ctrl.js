@@ -8,7 +8,7 @@ const self = {
     getUserUpdates: async (req, res) => {
         const {query: {last_update_date = null}} = req;
         let userUpdates = {
-            conversations: [],
+            connections: [],
             expired: [],
             invites: [],
             announcements: [],
@@ -21,7 +21,7 @@ const self = {
                 resolve();
             }),
             new Promise(async (resolve) => {
-                userUpdates.conversations = (await getUserActiveConnectionsBehavior.get(req.user, last_update_date))
+                userUpdates.connections = (await getUserActiveConnectionsBehavior.get(req.user, last_update_date))
                     .map((connection) => new ConnectionResponse(connection, req.user));
                 resolve();
             })
