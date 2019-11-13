@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const ConnectionModel = mongoose.model('Connection');
-const Logger = require('@logger')('getUserActiveConnections.bv.js');
 const connectionStatus = require('@models/types/connectionStatus');
-const profileLoader = require('@api/loaders/profile');
-const caster = require('@api/utils/caster');
+const connectionMembersLoader = require('@api/loaders/connectionMembers');
 
 const self = {
     /**
@@ -28,7 +26,7 @@ const self = {
         }
         activeConnections = activeConnections.map((connection) => connection.toObject());
         await Promise.all(activeConnections.map(async (connection) => {
-            connection.members = await profileLoader.getList(connection.members.filter((userId) => caster.toString(userId) !== caster.toString(user._id)));
+            await connectionMembersLoader.load(connection, user._id);
         }));
         return activeConnections;
     },
