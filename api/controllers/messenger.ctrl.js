@@ -10,7 +10,7 @@ const EventEmitter = require('@emitter');
 const eventTypes = require('@events');
 
 const self = {
-    getConversation: async (req, res) => {
+    getConnection: async (req, res) => {
         try {
             res.json(new ConnectionResponse(
                 await connectionMembersLoader.load(req.connection, req.user._id),
@@ -19,6 +19,17 @@ const self = {
         } catch (e) {
             Logger.error(`getConversation: {${e.message}}`);
             Logger.debug(`getConversation error: {${JSON.stringify(e)}}`);
+            res.sendStatus(503);
+        }
+    },
+    markAsRead: async (req, res) => {
+        try {
+            req.connection.readBy(req.user._id);
+            await req.connection.save();
+            res.sendStatus(200);
+        } catch (e) {
+            Logger.error(`Mark connection as read: {${e.message}}`);
+            Logger.debug(`Mark connection as read: {${JSON.stringify(e)}}`);
             res.sendStatus(503);
         }
     },
@@ -38,7 +49,7 @@ const self = {
             res.sendStatus(503);
         }
     },
-    getConversationPage: async (req, res) => {
+    getConnectionPage: async (req, res) => {
         const {last_id} = req.query;
         try {
             let messages = await getConnectionPastMessagesBehavior.get(req.connection, last_id);

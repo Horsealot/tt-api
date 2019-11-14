@@ -5,7 +5,8 @@ const messageValidator = require('@models/validators/connections/message.validat
 const validator = require('@api/utils/validator');
 
 module.exports = (router) => {
-    router.get('/conversations/:id', auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.getConversation);
-    router.post('/conversations/:id', validator(messageValidator, 'body'), auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.postMessage);
-    router.get('/conversations/:id/pages', auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.getConversationPage);
+    router.get('/connections/:id', auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.getConnection);
+    router.post('/connections/:id', validator(messageValidator, 'body'), auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.postMessage);
+    router.post('/connections/:id/read', auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.markAsRead);
+    router.get('/connections/:id/pages', auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.getConnectionPage);
 };

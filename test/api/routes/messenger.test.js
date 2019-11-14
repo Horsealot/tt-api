@@ -30,10 +30,10 @@ describe('Messenger Route', () => {
     /*
     * Test the /GET conversation route
     */
-    describe('GET /conversations/:conversationId', () => {
+    describe('GET /connections/:connectionId', () => {
         it('should not accept an unauthenticated request', (done) => {
             chai.request(server)
-                .get('/api/conversations/5db6f9ffaea41bc6791aebd6')
+                .get('/api/connections/5db6f9ffaea41bc6791aebd6')
                 .send()
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -45,10 +45,10 @@ describe('Messenger Route', () => {
     /*
     * Test the /GET conversation page route
     */
-    describe('GET /conversations/:conversationId/pages', () => {
+    describe('GET /connections/:connectionId/pages', () => {
         it('should not accept an unauthenticated request', (done) => {
             chai.request(server)
-                .get('/api/conversations/5db6f9ffaea41bc6791aebd6/pages')
+                .get('/api/connections/5db6f9ffaea41bc6791aebd6/pages')
                 .send()
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -60,10 +60,10 @@ describe('Messenger Route', () => {
     /*
     * Test the /POST conversation route
     */
-    describe('POST /conversations/:conversationId', () => {
+    describe('POST /connections/:connectionId', () => {
         it('should not accept an unauthenticated request', (done) => {
             chai.request(server)
-                .post('/api/conversations/5db6f9ffaea41bc6791aebd6')
+                .post('/api/connections/5db6f9ffaea41bc6791aebd6')
                 .send({message: 'Test'})
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -72,10 +72,25 @@ describe('Messenger Route', () => {
         });
         it('should return 422 for a missing body message', (done) => {
             chai.request(server)
-                .post('/api/conversations/5db6f9ffaea41bc6791aebd6')
+                .post('/api/connections/5db6f9ffaea41bc6791aebd6')
                 .send()
                 .end((err, res) => {
                     res.should.have.status(422);
+                    done();
+                });
+        });
+    });
+
+    /*
+    * Test the /POST conversation read route
+    */
+    describe('POST /connections/:connectionId/read', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .post('/api/connections/5db6f9ffaea41bc6791aebd6/read')
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(401);
                     done();
                 });
         });
