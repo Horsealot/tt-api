@@ -99,7 +99,7 @@ describe('Spotify Controller', () => {
             });
         });
         it('should save and return a user and its tracks and artists', (done) => {
-            const delinkUserStub = sinon.stub(SpotifyService, 'delinkUser').returns();
+            const delinkUserStub = sinon.stub(SpotifyService, 'delinkUser').resolves();
             UserModel.findOne({email: 'john.doe@dummy.com'}, (err, user) => {
                 user.spotify = {
                     tracks: [

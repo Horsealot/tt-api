@@ -25,7 +25,7 @@ const ConnectionSchema = new Schema({
         default: 0
     },
     messages: [messageSchema],
-    readers: {type: Object, default: {}},
+    readers: {type: Schema.Types.Mixed, default: {}},
 });
 
 ConnectionSchema.index({"members": 1}, {unique: true});
@@ -64,9 +64,10 @@ ConnectionSchema.methods.addMessage = function (message) {
 ConnectionSchema.methods.readBy = function (userId) {
     if (!this.messages.length) return;
     this.readers[userId] = {
-        last_read: this.messages[this.messages.length - 1].id,
+        last_read: this.messages[this.messages.length - 1]._id,
         at: new Date()
     };
+    this.markModified('readers');
 };
 
 module.exports = mongoose.model('Connection', ConnectionSchema);

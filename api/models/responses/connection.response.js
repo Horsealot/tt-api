@@ -5,7 +5,10 @@ const countUserUnreadMessagesBehavior = require('@api/behaviors/countUserUnreadM
 class ConnectionResponse {
     constructor(connection, loggedUser) {
         this.id = connection._id;
-        this.members = connection.members.map((member) => new UserResponse(member));
+        this.members = connection.members.map((member) => {
+            if (member instanceof UserResponse) return member;
+            return new UserResponse(member)
+        });
         this.status = connection.status;
         this.created_at = connection.created_at;
         this.last_active_at = connection.last_active_at;

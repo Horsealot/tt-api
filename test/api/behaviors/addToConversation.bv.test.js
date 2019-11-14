@@ -42,13 +42,14 @@ describe('Add message to conversation behavior', () => {
             }).then(() => {
                 return addToConversationBehavior.addMemberMessage(connection, sender, 'My new message');
             }).then(() => {
-                return ConnectionModel.findOne({members: USER_ID_1});
+                return ConnectionModel.findOne({});
             }).then((connection) => {
                 expect(connection.messages).to.be.an('array').of.length(1);
                 expect(connection.messages[0].readers).to.be.an('array').of.length(1);
                 expect(connection.messages[0].sender).to.be.eql(sender._id);
                 expect(connection.messages[0].content.data).to.be.equal('My new message');
                 expect(connection.messages[0].type).to.be.equal(messageType.MESSAGE);
+                expect(connection.readers[sender._id].last_read.toString()).to.be.equal(connection.messages[0].id);
                 return MessageModel.find({});
             }).then((messages) => {
                 expect(messages).to.be.an('array').of.length(1);

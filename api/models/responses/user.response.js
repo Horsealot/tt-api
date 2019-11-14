@@ -5,7 +5,7 @@ const PictureResponse = require('./users/picture.response');
 
 class UserResponse {
     constructor(user) {
-        this.id = user._id;
+        this.id = user.id;
         this.age = user.date_of_birth ? DateUtils.getUserAge(user.date_of_birth) : null;
         this.firstname = user.firstname;
         this.bio = user.bio;

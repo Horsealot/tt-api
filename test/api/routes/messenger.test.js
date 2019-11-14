@@ -9,7 +9,6 @@ const expect = chai.expect;
 const chaiHttp = require('chai-http');
 const should = chai.should();
 const sinon = require('sinon');
-const mongoose = require('mongoose');
 
 require('@models');
 const Hydrator = require('./../../hydrators');
@@ -53,6 +52,30 @@ describe('Messenger Route', () => {
                 .send()
                 .end((err, res) => {
                     res.should.have.status(401);
+                    done();
+                });
+        });
+    });
+
+    /*
+    * Test the /POST conversation route
+    */
+    describe('POST /conversations/:conversationId', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .post('/api/conversations/5db6f9ffaea41bc6791aebd6')
+                .send({message: 'Test'})
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+        it('should return 422 for a missing body message', (done) => {
+            chai.request(server)
+                .post('/api/conversations/5db6f9ffaea41bc6791aebd6')
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(422);
                     done();
                 });
         });
