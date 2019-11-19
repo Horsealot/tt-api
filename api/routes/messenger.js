@@ -9,4 +9,6 @@ module.exports = (router) => {
     router.post('/connections/:id', validator(messageValidator, 'body'), auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.postMessage);
     router.post('/connections/:id/read', auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.markAsRead);
     router.get('/connections/:id/pages', auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.getConnectionPage);
+    router.get('/connections/:id/games', auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.getShuffleGame);
+    router.post('/connections/:id/games', auth.required, auth.loadUser, messengerMiddleware.loadConnection, MessengerController.postShuffleGame);
 };

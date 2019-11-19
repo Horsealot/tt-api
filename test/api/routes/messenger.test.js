@@ -96,4 +96,34 @@ describe('Messenger Route', () => {
         });
     });
 
+    /*
+    * Test the /GET conversation game route
+    */
+    describe('GET /connections/:connectionId/games', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .get('/api/connections/5db6f9ffaea41bc6791aebd6/games')
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+    });
+
+    /*
+    * Test the /POST conversation game route
+    */
+    describe('POST /connections/:connectionId/games', () => {
+        it('should not accept an unauthenticated request', (done) => {
+            chai.request(server)
+                .post('/api/connections/5db6f9ffaea41bc6791aebd6/games')
+                .send()
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    done();
+                });
+        });
+    });
+
 });

@@ -1,10 +1,12 @@
 const connectionMembersLoader = require('@api/loaders/connectionMembers');
 const ConnectionResponse = require('@models/responses/connection.response');
 const MessageResponse = require('@models/responses/message.response');
+const ShuffleGameResponse = require('@models/responses/shuffleGame.response');
 const Logger = require('@logger')('messenger.ctrl.js');
 const getConnectionPastMessagesBehavior = require('@api/behaviors/connections/getConnectionPastMessages.bv');
 const addToConversationBehavior = require('@api/behaviors/addToConversation.bv');
-
+const generateShuffleGameBehavior = require('@api/behaviors/games/generateShuffleGame.bv');
+const postShuffleGameBehavior = require('@api/behaviors/games/postShuffleGame.bv');
 
 const EventEmitter = require('@emitter');
 const eventTypes = require('@events');
@@ -18,7 +20,7 @@ const self = {
             ));
         } catch (e) {
             Logger.error(`getConversation: {${e.message}}`);
-            Logger.debug(`getConversation error: {${JSON.stringify(e)}}`);
+            Logger.debug(`getConversation error: {${e.stack}}`);
             res.sendStatus(503);
         }
     },
@@ -29,7 +31,7 @@ const self = {
             res.sendStatus(200);
         } catch (e) {
             Logger.error(`Mark connection as read: {${e.message}}`);
-            Logger.debug(`Mark connection as read: {${JSON.stringify(e)}}`);
+            Logger.debug(`Mark connection as read: {${e.stack}}`);
             res.sendStatus(503);
         }
     },
@@ -45,7 +47,7 @@ const self = {
             res.json(new MessageResponse(message));
         } catch (e) {
             Logger.error(`postMessage: {${e.message}}`);
-            Logger.debug(`postMessage error: {${JSON.stringify(e)}}`);
+            Logger.debug(`postMessage error: {${e.stack}}`);
             res.sendStatus(503);
         }
     },
@@ -55,8 +57,28 @@ const self = {
             let messages = await getConnectionPastMessagesBehavior.get(req.connection, last_id);
             res.json(messages.map((message) => new MessageResponse(message)));
         } catch (e) {
-            Logger.error(`getConversation: {${e.message}}`);
-            Logger.debug(`getConversation error: {${JSON.stringify(e)}}`);
+            Logger.error(`getConnectionPage: {${e.message}}`);
+            Logger.debug(`getConnectionPage error: {${e.stack}}`);
+            res.sendStatus(503);
+        }
+    },
+    getShuffleGame: async (req, res) => {
+        try {
+            let game = await generateShuffleGameBehavior.generate(req.user._id, req.connection._id);
+            res.json(new ShuffleGameResponse(game));
+        } catch (e) {
+            Logger.error(`getShuffleGame: {${e.message}}`);
+            Logger.debug(`getShuffleGame error: {${e.stack}}`);
+            res.sendStatus(503);
+        }
+    },
+    postShuffleGame: async (req, res) => {
+        try {
+            let message = await postShuffleGameBehavior.post(req.user, req.connection);
+            res.json(new MessageResponse(message));
+        } catch (e) {
+            Logger.error(`postShuffleGame: {${e.message}}`);
+            Logger.debug(`postShuffleGame error: {${e.stack}}`);
             res.sendStatus(503);
         }
     },
