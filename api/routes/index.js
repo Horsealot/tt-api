@@ -5,6 +5,7 @@ const ping = require('./ping');
 const session = require('./session');
 const user = require('./user');
 const global = require('./global');
+const messenger = require('./messenger');
 
 module.exports = (router) => {
     profile(router);
@@ -14,4 +15,5 @@ module.exports = (router) => {
     session(router);
     global(router);
     user(router);
+    messenger(router);
 };
