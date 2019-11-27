@@ -14,7 +14,9 @@ module.exports = (connection, sender, game) => new MessageModel({
     sender: sender._id,
     type: messageTypes.GAMING,
     content: {
+        game_id: game._id,
         data: game.label,
-        answers: game.answers
+        answers: game.answers,
+        answered_by: []
     }
 });

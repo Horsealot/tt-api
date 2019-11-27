@@ -18,10 +18,12 @@ const {NotFoundError} = require('@api/errors');
 const addToConversationBehavior = require('@api/behaviors/addToConversation.bv');
 const messageTypes = require('@models/types/message');
 
+const EventEmitter = require('@emitter');
+const eventTypes = require('@events');
+
 const postShuffleGameBehavior = require('@api/behaviors/games/postShuffleGame.bv');
 
 const Hydrator = require('./../../../hydrators');
-
 
 describe('Post shuffle game behavior', () => {
 
@@ -58,6 +60,7 @@ describe('Post shuffle game behavior', () => {
     it('should throw an NotFoundError if the cached game does not link to an actual game', (done) => {
         const game = new ShuffleGameModel({label: 'test q'});
         const addToConversationStub = sinon.stub(addToConversationBehavior, 'add').resolves();
+        const emitterStub = sinon.stub(EventEmitter, 'emit').resolves();
         let getCachedGameStub;
         Hydrator.clean().then(() => {
             return game.save();
@@ -66,9 +69,7 @@ describe('Post shuffle game behavior', () => {
             return postShuffleGameBehavior.post(new ConnectionModel, new UserModel);
         }).then((message) => {
             expect(message.type).to.be.equal(messageTypes.GAMING);
-            return ShuffleGameModel.findOne({});
-        }).then((game) => {
-            expect(game.usage).to.be.equal(1);
+            expect(emitterStub.calledOnceWith(eventTypes.GAMING_GAME_SENT, {gameId: game._id})).to.be.true;
             expect(getCachedGameStub.calledOnce).to.be.true;
             expect(addToConversationStub.calledOnce).to.be.true;
             done();

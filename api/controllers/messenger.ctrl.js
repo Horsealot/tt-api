@@ -7,6 +7,7 @@ const getConnectionPastMessagesBehavior = require('@api/behaviors/connections/ge
 const addToConversationBehavior = require('@api/behaviors/addToConversation.bv');
 const generateShuffleGameBehavior = require('@api/behaviors/games/generateShuffleGame.bv');
 const postShuffleGameBehavior = require('@api/behaviors/games/postShuffleGame.bv');
+const answerShuffleGameBehavior = require('@api/behaviors/games/answerShuffleGame.bv');
 
 const EventEmitter = require('@emitter');
 const eventTypes = require('@events');
@@ -81,6 +82,12 @@ const self = {
             Logger.debug(`postShuffleGame error: {${e.stack}}`);
             res.sendStatus(503);
         }
+    },
+    answerShuffleGame: async (req, res) => {
+        const {params: {messageId}} = req;
+        const answer = req.body.answer || req.body.rating;
+        let message = await answerShuffleGameBehavior.post(req.user, req.connection, messageId, answer);
+        res.json(new MessageResponse(message));
     },
 };
 
