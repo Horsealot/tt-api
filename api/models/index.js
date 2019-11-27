@@ -16,6 +16,8 @@ require('./schemas/userSession');
 require('./schemas/blacklist');
 require('./schemas/session');
 require('./schemas/connection');
+require('./schemas/message');
+require('./schemas/game');
 
 var db = mongoose.connection;
 db.on('error', () => {

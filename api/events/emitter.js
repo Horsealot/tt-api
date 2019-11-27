@@ -16,6 +16,7 @@ require('./listeners/macaroonRefused.listener')(emitter);
 require('./listeners/macaroonAccepted.listener')(emitter);
 require('./listeners/refreshSuggestion.listener')(emitter);
 require('./listeners/suggestionSkipped.listener')(emitter);
+require('./listeners/gameSent.listener')(emitter);
 
 module.exports = emitter;
 
